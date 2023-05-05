@@ -1,12 +1,15 @@
 package com.evolunteer.evm.ui.dialog;
 
-import com.evolunteer.evm.backend.service.UserService;
+import com.evolunteer.evm.backend.service.user_management.AccountService;
+import com.evolunteer.evm.backend.service.user_management.UserService;
+import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.request.CreateUserRequest;
-import com.evolunteer.evm.common.utils.DateUtils;
-import com.evolunteer.evm.common.utils.LocalizationUtils;
-import com.evolunteer.evm.common.utils.ValidationUtils;
+import com.evolunteer.evm.common.utils.date.DateUtils;
+import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
+import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import com.evolunteer.evm.ui.button.CancelButton;
 import com.evolunteer.evm.ui.button.ConfirmButton;
+import com.evolunteer.evm.ui.notification.NotificationFactory;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;
@@ -29,14 +32,29 @@ import org.springframework.context.MessageSource;
 
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_ACCOUNT_ALREADY_EXIST_BY_USERNAME_ERROR;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.UI.RegistrationDialog.SUCCESS_REGISTRATION_TEXT;
 
 public class RegistrationDialog extends Dialog {
 
     private final ConfirmButton confirmButton;
-    private final Binder<CreateUserRequest> createUserRequestBinder = new Binder<>();
-    private final CreateUserRequest createUserRequest = new CreateUserRequest();
+    private final Binder<CreateUserRequest> createUserRequestBinder;
+    private final CreateUserRequest createUserRequest;
+    private final Locale locale;
+    private final MessageSource messageSource;
+    private final AccountService accountService;
+    private final UserService userService;
 
-    public RegistrationDialog(MessageSource messageSource, Locale locale, UserService userService) {
+    public RegistrationDialog(MessageSource messageSource, Locale locale, UserService userService, AccountService accountService) {
+        this.locale = locale;
+        this.messageSource = messageSource;
+        this.userService = userService;
+        this.accountService = accountService;
+        this.createUserRequest = new CreateUserRequest();
+        this.createUserRequestBinder = new Binder<>();
+
         final String headerText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.HEADER_TEXT, null, locale);
         final String credentialsHeaderText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.CREDENTIALS_HEADER_TEXT, null, locale);
         final String nameFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.NAME_FIELD_TEXT, null, locale);
@@ -116,7 +134,7 @@ public class RegistrationDialog extends Dialog {
                 .withValidator(new RegexpValidator(passwordValidationText, ValidationUtils.PASSWORD_REGEX))
                 .bind(CreateUserRequest::getPassword, CreateUserRequest::setPassword);
 
-        confirmButton = new ConfirmButton(messageSource, locale, this.registration(messageSource, locale, userService));
+        confirmButton = new ConfirmButton(messageSource, locale, this.registration());
 
         createUserRequestBinder.setBean(createUserRequest);
 
@@ -130,27 +148,34 @@ public class RegistrationDialog extends Dialog {
         this.getFooter().add(confirmButton, new CancelButton(messageSource, locale, buttonClickEvent -> this.close()));
     }
 
-    private ComponentEventListener<ClickEvent<Button>> registration(MessageSource messageSource, Locale locale, UserService userService) {
+    private ComponentEventListener<ClickEvent<Button>> registration() {
         return buttonClickEvent -> {
-
             if (createUserRequestBinder.writeBeanIfValid(createUserRequest)) {
-                userService.registerUser(createUserRequest);
-                this.removeAll();
-                this.setWidth("500px");
-                this.setHeight("300px");
+                final String successfullyRegistration = messageSource.getMessage(SUCCESS_REGISTRATION_TEXT, null, locale);
+                final String accountAlreadyExistValidationText = messageSource.getMessage(VALIDATION_ACCOUNT_ALREADY_EXIST_BY_USERNAME_ERROR,
+                        new String[]{createUserRequest.getUsername()}, locale);
 
-                final String successfullyRegistration = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.SUCCESS_REGISTRATION_TEXT, null, locale);
+                final Optional<AccountDto> optionalAccountDto = accountService.getAccountByUsername(createUserRequest.getUsername());
+                if (optionalAccountDto.isPresent() && !optionalAccountDto.get().getStatus().isExpired()) {
+                    NotificationFactory.error(accountAlreadyExistValidationText).open();
+                } else  {
+                    userService.registerUser(createUserRequest);
+                    this.removeAll();
+                    this.setWidth("500px");
+                    this.setHeight("300px");
 
-                final VerticalLayout verticalLayout = new VerticalLayout();
-                verticalLayout.setSizeFull();
-                verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-                verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-                final Icon icon = new Icon(VaadinIcon.CHECK_SQUARE_O);
-                final Span message = new Span(successfullyRegistration);
-                verticalLayout.add(message, icon);
-                add(verticalLayout);
-                this.getFooter().remove(confirmButton);
+                    final VerticalLayout verticalLayout = new VerticalLayout();
+                    verticalLayout.setSizeFull();
+                    verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+                    verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+
+                    final Icon icon = new Icon(VaadinIcon.CHECK_SQUARE_O);
+                    final Span message = new Span(successfullyRegistration);
+                    verticalLayout.add(message, icon);
+                    add(verticalLayout);
+                    this.getFooter().remove(confirmButton);
+                }
             }
         };
     }

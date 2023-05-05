@@ -1,7 +1,7 @@
 package com.evolunteer.evm.common.mapper;
 
-import com.evolunteer.evm.common.domain.dto.UserDto;
-import com.evolunteer.evm.common.domain.entity.User;
+import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.entity.user_management.User;
 import com.evolunteer.evm.common.domain.request.CreateUserRequest;
 import org.mapstruct.Mapper;
 

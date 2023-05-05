@@ -37,13 +37,14 @@ public class SecurityUtils {
         public static final String ACCOUNT_LOGIN_ROUTE = "/login";
         public static final String OAUTH_GOOGLE_LOGIN_ROUTE = "/oauth2/authorization/google";
         public static final String INTRODUCTION_ROUTE = "/introduction";
+        public static final String ACCOUNT_VERIFICATION = "/verification/**";
 
         public static String[] allowedRoutes() {
             return listOfAllowedRoutes().toArray(new String[0]);
         }
 
         private static List<String> listOfAllowedRoutes() {
-            return List.of(ACCOUNT_LOGIN_ROUTE, INTRODUCTION_ROUTE);
+            return List.of(ACCOUNT_LOGIN_ROUTE, INTRODUCTION_ROUTE, ACCOUNT_VERIFICATION);
         }
     }
 }

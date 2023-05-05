@@ -1,6 +1,6 @@
 package com.evolunteer.evm.ui.layout;
 
-import com.evolunteer.evm.common.utils.LocalizationUtils;
+import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.utils.CookieUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;

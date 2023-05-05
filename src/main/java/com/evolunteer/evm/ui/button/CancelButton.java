@@ -1,6 +1,6 @@
 package com.evolunteer.evm.ui.button;
 
-import com.evolunteer.evm.common.utils.LocalizationUtils;
+import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.button.Button;

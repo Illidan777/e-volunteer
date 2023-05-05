@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 public class RouteUtils {
     public static final String INTRO_ROUTE = "introduction";
     public static final String LOGIN_ROUTE = "login";
+    public static final String ACCOUNT_VERIFICATION = "verification";
 }

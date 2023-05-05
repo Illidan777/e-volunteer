@@ -4,7 +4,7 @@ import com.evolunteer.evm.backend.security.cache.CustomRequestCache;
 import com.evolunteer.evm.backend.security.handler.Oauth2FailureHandler;
 import com.evolunteer.evm.backend.security.handler.Oauth2SuccessHandler;
 import com.evolunteer.evm.backend.security.utils.SecurityUtils;
-import com.evolunteer.evm.backend.service.AccountService;
+import com.evolunteer.evm.backend.service.user_management.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -57,11 +57,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .anyRequest().authenticated()
                 .and()
-                .oauth2Login()
-                    .loginPage(SecurityUtils.Route.OAUTH_GOOGLE_LOGIN_ROUTE)
-                    .successHandler(this.oauthSuccessHandler())
-                    .failureHandler(this.oauthFailureHandler())
-                .and()
                 .formLogin()
                     .loginPage(LOGIN_URL).permitAll()
                     .loginProcessingUrl(LOGIN_PROCESSING_URL)
@@ -69,6 +64,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .logout()
                     .logoutSuccessUrl(LOGOUT_SUCCESS_URL)
+                .and()
+                .oauth2Login()
+                .loginPage(SecurityUtils.Route.OAUTH_GOOGLE_LOGIN_ROUTE)
+                .successHandler(this.oauthSuccessHandler())
+                .failureHandler(this.oauthFailureHandler())
         ;
     }
 

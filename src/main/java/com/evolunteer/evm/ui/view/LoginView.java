@@ -1,18 +1,17 @@
 package com.evolunteer.evm.ui.view;
 
-import com.evolunteer.evm.backend.service.UserService;
-import com.evolunteer.evm.common.utils.LocalizationUtils;
+import com.evolunteer.evm.backend.service.user_management.AccountService;
+import com.evolunteer.evm.backend.service.user_management.UserService;
+import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.dialog.RegistrationDialog;
 import com.evolunteer.evm.ui.layout.LanguageLayout;
 import com.evolunteer.evm.ui.utils.RouteUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.login.LoginI18n;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -28,7 +27,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
 
-    public LoginView(MessageSource messageSource, UserService userService){
+    public LoginView(MessageSource messageSource, UserService userService, AccountService accountService){
         final Locale locale = LocalizationUtils.getLocale();
         setSizeFull();
         setAlignItems(Alignment.CENTER);
@@ -66,7 +65,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.setAction("login");
 
         final H1 logInHeader = new H1(loginHeader);
-        final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new RegistrationDialog(messageSource, locale, userService).open());
+        final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new RegistrationDialog(messageSource, locale, userService, accountService).open());
         final Button googleButton = new Button(loginWithGoogle, VaadinIcon.GOOGLE_PLUS_SQUARE.create(), buttonClickEvent -> UI.getCurrent().getPage().setLocation("/oauth2/authorization/google"));
 
         add(

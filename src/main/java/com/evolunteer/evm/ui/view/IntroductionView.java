@@ -1,6 +1,6 @@
 package com.evolunteer.evm.ui.view;
 
-import com.evolunteer.evm.common.utils.LocalizationUtils;
+import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.layout.LanguageLayout;
 import com.evolunteer.evm.ui.utils.RouteUtils;
 import com.vaadin.flow.component.UI;
@@ -10,12 +10,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.server.VaadinService;
 import org.springframework.context.MessageSource;
-
-import javax.servlet.http.Cookie;
-import java.util.Arrays;
-import java.util.Locale;
 
 @Route(RouteUtils.INTRO_ROUTE)
 @PageTitle("Introduction | E-Volunteer")

@@ -1,7 +1,7 @@
 package com.evolunteer.evm.common.mapper;
 
-import com.evolunteer.evm.common.domain.dto.AccountDto;
-import com.evolunteer.evm.common.domain.entity.Account;
+import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
+import com.evolunteer.evm.common.domain.entity.user_management.Account;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
