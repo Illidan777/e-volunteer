@@ -1,7 +1,7 @@
 package com.evolunteer.evm.ui.view;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
-import com.evolunteer.evm.common.domain.enums.user_management.TokenVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.utils.RouteUtils;
 import com.vaadin.flow.component.UI;
@@ -50,8 +50,8 @@ public class AccountVerificationView extends VerticalLayout implements BeforeEnt
             this.addVerificationInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
-        final TokenVerificationResult tokenVerificationResult = accountService.verifyAccount(accountId, token);
-        this.addVerificationInfo(tokenVerificationResult.getLocalizedMessage());
+        final LinkVerificationResult linkVerificationResult = accountService.verifyAccount(accountId, token);
+        this.addVerificationInfo(linkVerificationResult.getLocalizedMessage());
     }
 
     private void addVerificationInfo(final String message) {

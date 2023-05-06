@@ -1,25 +1,26 @@
 package com.evolunteer.evm.backend.service.user_management.impl;
 
 import com.evolunteer.evm.backend.repository.user_management.AccountRepository;
-import com.evolunteer.evm.backend.security.config.VerificationTokenConfig;
+import com.evolunteer.evm.backend.security.config.VerificationLinkConfig;
+import com.evolunteer.evm.backend.security.principal.AuthenticationPrincipal;
 import com.evolunteer.evm.backend.service.notification_management.sender.NotificationService;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
-import com.evolunteer.evm.backend.service.user_management.VerificationTokenService;
+import com.evolunteer.evm.backend.service.user_management.VerificationLinkService;
 import com.evolunteer.evm.common.domain.dto.notification_management.NotificationRequest;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.backend.security.principal.AuthenticationPrincipal;
-import com.evolunteer.evm.common.domain.dto.user_management.VerificationTokenDto;
+import com.evolunteer.evm.common.domain.dto.user_management.VerificationLinkDto;
 import com.evolunteer.evm.common.domain.entity.user_management.Account;
+import com.evolunteer.evm.common.domain.entity.user_management.User;
 import com.evolunteer.evm.common.domain.enums.notification_management.NotificationProviderType;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountRole;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountStatus;
-import com.evolunteer.evm.common.domain.enums.user_management.TokenVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
 import com.evolunteer.evm.common.domain.exception.common.AlreadyExistException;
 import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundException;
 import com.evolunteer.evm.common.domain.exception.validation.ValidationException;
 import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
 import com.evolunteer.evm.common.mapper.AccountMapper;
-import com.evolunteer.evm.common.mapper.VerificationTokenMapper;
+import com.evolunteer.evm.common.mapper.VerificationLinkMapper;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.string.StringGenerator;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
@@ -36,8 +37,7 @@ import org.springframework.util.Assert;
 
 import java.util.*;
 
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.EmailNotification.ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN;
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.EmailNotification.ACCOUNT_VERIFICATION_NOTIFICATION_SUBJECT;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.EmailNotification.*;
 import static java.lang.String.format;
 
 @Service
@@ -48,18 +48,22 @@ public class AccountServiceImpl implements AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountMapper accountMapper;
-    private final VerificationTokenService verificationTokenService;
+    private final VerificationLinkService verificationLinkService;
     private final NotificationService notificationService;
-    private final VerificationTokenConfig verificationTokenConfig;
-    private final VerificationTokenMapper verificationTokenMapper;
+    private final VerificationLinkConfig verificationLinkConfig;
+    private final VerificationLinkMapper verificationLinkMapper;
     private final MessageSource messageSource;
 
     @Value("${email.verification.link.prefix}")
     private String verificationLinkPrefix;
 
+
+    @Value("${password-recover.link.prefix}")
+    private String passwordRecoverLinkPrefix;
+
     @Override
     public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-        if(StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(username)) {
             throw new ValidationException(String.format("Unable load account info by username %s. Username must be specified!", username));
         }
         return new AuthenticationPrincipal(this.findAccountByUsername(username));
@@ -67,7 +71,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDto createAccount(final CreateAccountRequest accountRequest) {
-        if(Objects.isNull(accountRequest)) {
+        if (Objects.isNull(accountRequest)) {
             throw new ValidationException("Unable to create account. Account is null!");
         }
         ValidationUtils.validate(accountRequest);
@@ -76,9 +80,9 @@ public class AccountServiceImpl implements AccountService {
         final String password = accountRequest.getPassword();
 
         final Optional<Account> optionalAccount = accountRepository.findByUsername(username);
-        if(optionalAccount.isPresent()) {
+        if (optionalAccount.isPresent()) {
             final Account existedAccount = optionalAccount.get();
-            if(existedAccount.getStatus().isExpired()) {
+            if (existedAccount.getStatus().isExpired()) {
                 accountRepository.delete(existedAccount);
             } else {
                 throw new AlreadyExistException(
@@ -91,8 +95,8 @@ public class AccountServiceImpl implements AccountService {
                 .useLower(true)
                 .useUpper(true)
                 .build()
-                .generate(verificationTokenConfig.getVerificationTokenLength());
-        final VerificationTokenDto verificationToken = verificationTokenService.create(generatedToken);
+                .generate(verificationLinkConfig.getVerificationTokenLength());
+        final VerificationLinkDto verificationToken = verificationLinkService.create(generatedToken);
         final String encodedToken = Base64.getEncoder().encodeToString(generatedToken.getBytes());
 
         final Account mappedAccount = new Account();
@@ -100,7 +104,7 @@ public class AccountServiceImpl implements AccountService {
         mappedAccount.setPassword(passwordEncoder.encode(password));
         mappedAccount.setStatus(AccountStatus.NOT_VERIFIED);
         mappedAccount.setRoles(new HashSet<>(Collections.singleton(AccountRole.ROLE_VOLUNTEER)));
-        mappedAccount.setVerificationToken(verificationTokenMapper.mapVerificationTokenDtoToVerificationToken(verificationToken));
+        mappedAccount.setVerificationLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationToken));
         final Account savedAccount = accountRepository.save(mappedAccount);
 
         final String encodedAccountId = Base64.getEncoder().encodeToString(String.valueOf(savedAccount.getId()).getBytes());
@@ -110,26 +114,64 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public TokenVerificationResult verifyAccount(final String encodedAccountId, final String encodedVerificationToken) {
+    public void createPasswordRecover(final Long accountId) {
+        if (Objects.isNull(accountId)) {
+            throw new ValidationException("Unable to create account password recover. Account id can not be absent");
+        }
+        final Account account = this.findAccountById(accountId);
+        final User user = account.getUser();
+        final String generatedToken = new StringGenerator.StringGeneratorBuilder()
+                .useDigits(true)
+                .useLower(true)
+                .useLower(true)
+                .useUpper(true)
+                .build()
+                .generate(verificationLinkConfig.getVerificationTokenLength());
+        final VerificationLinkDto verificationLinkDto = verificationLinkService.create(generatedToken);
+        account.setPasswordRecoverLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationLinkDto));
+        accountRepository.save(account);
+        this.sendPasswordRecoverNotification(
+                Base64.getEncoder().encodeToString(String.valueOf(accountId).getBytes()),
+                Base64.getEncoder().encodeToString(String.valueOf(verificationLinkDto.getId()).getBytes()),
+                Base64.getEncoder().encodeToString(generatedToken.getBytes()),
+                user.getEmail()
+        );
+    }
+
+    @Override
+    public LinkVerificationResult verifyAccount(final String encodedAccountId, final String encodedVerificationToken) {
         final Long decodedAccountId;
         try {
             decodedAccountId = Long.valueOf(new String(Base64.getDecoder().decode(encodedAccountId)));
-        }catch (IllegalArgumentException e) {
-            return TokenVerificationResult.INCORRECT_VERIFICATION_CREDENTIALS;
+        } catch (IllegalArgumentException e) {
+            return LinkVerificationResult.INCORRECT_VERIFICATION_CREDENTIALS;
         }
         final Account account = this.findAccountById(decodedAccountId);
 
         if (account.getStatus().isVerified()) {
-            return TokenVerificationResult.SUCCESSFUL_VERIFICATION;
+            return LinkVerificationResult.SUCCESSFUL_VERIFICATION;
         }
-        final TokenVerificationResult tokenVerificationResult = verificationTokenService.verifyToken(account.getVerificationToken().getId(), encodedVerificationToken);
-        if (tokenVerificationResult.isExpired() || account.getStatus().isExpired()) {
+        if (account.getStatus().isExpired()) {
+            return LinkVerificationResult.EXPIRED_VERIFICATION_CREDENTIALS;
+        }
+        final LinkVerificationResult linkVerificationResult = verificationLinkService.verifyLink(account.getVerificationLink().getId(), encodedVerificationToken);
+        if (linkVerificationResult.isExpired()) {
             this.updateAccountStatus(decodedAccountId, AccountStatus.EXPIRED);
         }
-        if (tokenVerificationResult.isSuccess()) {
+        if (linkVerificationResult.isSuccess()) {
             this.updateAccountStatus(decodedAccountId, AccountStatus.VERIFIED);
         }
-        return tokenVerificationResult;
+        return linkVerificationResult;
+    }
+
+    @Override
+    public void recoverPasswordById(final Long accountId, final String newPassword) {
+        if (Objects.isNull(accountId) || StringUtils.isBlank(newPassword)) {
+            throw new ValidationException("Unable to recover account password. Account id and password can no be absent");
+        }
+        final Account account = this.findAccountById(accountId);
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
     }
 
     @Override
@@ -142,16 +184,6 @@ public class AccountServiceImpl implements AccountService {
     public Optional<AccountDto> getAccountById(final Long accountId) {
         final Optional<Account> optionalAccount = accountRepository.findById(accountId);
         return optionalAccount.map(accountMapper::mapAccountToAccountDto);
-    }
-
-    @Override
-    public void recoverPasswordById(final Long accountId, final String newPassword) {
-        if(Objects.isNull(accountId) || StringUtils.isBlank(newPassword)) {
-            throw new ValidationException("Unable to recover account password. Account id and password can no be absent");
-        }
-        final Account account = this.findAccountById(accountId);
-        account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
     }
 
     public void updateAccountStatus(final Long accountId, final AccountStatus status) {
@@ -177,6 +209,21 @@ public class AccountServiceImpl implements AccountService {
                 verificationAccountSubject,
                 NotificationProviderType.EMAIL,
                 Set.of(createAccountRequest.getEmail())
+        );
+        notificationService.send(notificationRequest);
+    }
+
+    private void sendPasswordRecoverNotification(final String encodedAccountId, final String encodedLinkId, final String encodedToken, final String userEmail) {
+        final String passwordRecoveringLink = String.format(passwordRecoverLinkPrefix, encodedAccountId, encodedLinkId, encodedToken);
+        final String verificationAccountSubject = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT,
+                null, LocalizationUtils.getLocale());
+        final String verificationAccountPattern = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN,
+                null, LocalizationUtils.getLocale());
+        final NotificationRequest notificationRequest = NotificationRequest.of(
+                String.format(verificationAccountPattern, passwordRecoveringLink),
+                verificationAccountSubject,
+                NotificationProviderType.EMAIL,
+                Set.of(userEmail)
         );
         notificationService.send(notificationRequest);
     }

@@ -1,17 +1,23 @@
-package com.evolunteer.evm.common.domain.dto.user_management;
+package com.evolunteer.evm.common.domain.entity.user_management;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Data
-public class VerificationTokenDto {
+@Entity
+@Table(name = "verification_links")
+public class VerificationLink {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String token;
+
     private LocalDateTime expirationTime;
 
-    @JsonIgnore
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expirationTime);
     }

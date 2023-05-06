@@ -1,14 +1,12 @@
 package com.evolunteer.evm.ui.view;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
+import com.evolunteer.evm.backend.service.user_management.VerificationLinkService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
-import com.evolunteer.evm.common.domain.enums.user_management.TokenVerificationResult;
-import com.evolunteer.evm.common.domain.request.CreateUserRequest;
+import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import com.evolunteer.evm.ui.binder.bean.PasswordRecoveringBean;
-import com.evolunteer.evm.ui.button.CancelButton;
 import com.evolunteer.evm.ui.button.ConfirmButton;
 import com.evolunteer.evm.ui.notification.NotificationFactory;
 import com.evolunteer.evm.ui.utils.RouteUtils;
@@ -20,14 +18,9 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.PasswordField;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.validator.RegexpValidator;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -38,21 +31,26 @@ import org.springframework.context.MessageSource;
 
 import java.util.*;
 
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.*;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_PASSWORD_CONFIRMING_ERROR;
 
 @Route(RouteUtils.PASSWORD_RECOVER)
 public class PasswordRecoverView extends VerticalLayout implements BeforeEnterObserver {
 
     private static final String ACCOUNT_ID_QUERY_PARAMETER_NAME = "accountId";
+    private static final String VERIFICATION_TOKEN_QUERY_PARAMETER_NAME = "verificationToken";
+    private static final String LINK_ID_QUERY_PARAMETER_NAME = "linkId";
     private final MessageSource messageSource;
     private final Locale locale;
+    private final VerificationLinkService verificationLinkService;
     private final AccountService accountService;
     private final Binder<PasswordRecoveringBean> passwordRecoveringBinder;
     private final PasswordRecoveringBean passwordRecoveringBean;
 
-    public PasswordRecoverView(MessageSource messageSource, AccountService accountService) {
+    public PasswordRecoverView(MessageSource messageSource, AccountService accountService, VerificationLinkService verificationLinkService) {
         this.messageSource = messageSource;
         this.accountService = accountService;
+        this.verificationLinkService = verificationLinkService;
         this.locale = LocalizationUtils.getLocale();
         this.passwordRecoveringBinder = new Binder<>();
         this.passwordRecoveringBean = new PasswordRecoveringBean();
@@ -61,26 +59,36 @@ public class PasswordRecoverView extends VerticalLayout implements BeforeEnterOb
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         final Map<String, List<String>> queryParameters = beforeEnterEvent.getLocation().getQueryParameters().getParameters();
-        if (!queryParameters.containsKey(ACCOUNT_ID_QUERY_PARAMETER_NAME)) {
+        if (!queryParameters.containsKey(ACCOUNT_ID_QUERY_PARAMETER_NAME)
+                || !queryParameters.containsKey(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME)
+                || !queryParameters.containsKey(LINK_ID_QUERY_PARAMETER_NAME)) {
             this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
         final String accountId = queryParameters.get(ACCOUNT_ID_QUERY_PARAMETER_NAME).get(0);
-        if (StringUtils.isBlank(accountId)) {
+        final String token = queryParameters.get(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME).get(0);
+        final String linkId = queryParameters.get(LINK_ID_QUERY_PARAMETER_NAME).get(0);
+        if (StringUtils.isBlank(accountId) || StringUtils.isBlank(token) || StringUtils.isBlank(linkId)) {
             this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
         final long decodedAccountId;
+        final long decodedLinkId;
         try {
             decodedAccountId = Long.parseLong(new String(Base64.getDecoder().decode(accountId)));
-        }catch (IllegalArgumentException e) {
+            decodedLinkId = Long.parseLong(new String(Base64.getDecoder().decode(linkId)));
+        } catch (IllegalArgumentException e) {
             this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
-        final Optional<AccountDto> optionalAccountDto = accountService.getAccountById(decodedAccountId);
-        if(optionalAccountDto.isEmpty()) {
-            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
+        final LinkVerificationResult linkVerificationResult = verificationLinkService.verifyLink(decodedLinkId, token);
+        if(!linkVerificationResult.isSuccess()) {
+            this.addInvalidLinkInfo(linkVerificationResult.getLocalizedMessage());
             return;
+        }
+        final Optional<AccountDto> optionalAccountDto = accountService.getAccountById(decodedAccountId);
+        if (optionalAccountDto.isEmpty()) {
+            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
         } else {
             this.addPasswordRecoveringComponents(decodedAccountId);
         }
@@ -126,19 +134,20 @@ public class PasswordRecoverView extends VerticalLayout implements BeforeEnterOb
         add(passwordRecoveringForm);
     }
 
-    private ComponentEventListener<ClickEvent<Button>> recoverPassword(Long accountId) {
+    private ComponentEventListener<ClickEvent<Button>> recoverPassword(final Long accountId) {
         return buttonClickEvent -> {
             if (passwordRecoveringBinder.writeBeanIfValid(passwordRecoveringBean)) {
                 final String passwordsDoNotMatch = messageSource.getMessage(VALIDATION_PASSWORD_CONFIRMING_ERROR, null, locale);
 
                 final String newPassword = passwordRecoveringBean.getPassword();
                 final String confirmingPassword = passwordRecoveringBean.getPasswordConfirming();
-                if(!newPassword.equals(confirmingPassword)) {
+                if (!newPassword.equals(confirmingPassword)) {
                     NotificationFactory.error(passwordsDoNotMatch).open();
                     return;
                 }
                 accountService.recoverPasswordById(accountId, newPassword);
                 UI.getCurrent().getPage().setLocation(RouteUtils.LOGIN_ROUTE);
+
             }
         };
     }

@@ -1,12 +1,7 @@
 package com.evolunteer.evm.ui.dialog;
 
-import com.evolunteer.evm.backend.service.notification_management.sender.NotificationService;
-import com.evolunteer.evm.backend.service.user_management.UserService;
-import com.evolunteer.evm.common.domain.dto.notification_management.NotificationRequest;
+import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
-import com.evolunteer.evm.common.domain.enums.notification_management.NotificationProviderType;
-import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.button.CancelButton;
 import com.evolunteer.evm.ui.button.ConfirmButton;
@@ -27,12 +22,9 @@ import com.vaadin.flow.data.binder.Binder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
-import java.util.Base64;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.EmailNotification.*;
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_ACCOUNT_DOES_NOT_EXIST_BY_USERNAME_ERROR;
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_ACCOUNT_IS_NOT_VERIFIED_ERROR;
 
@@ -41,23 +33,17 @@ public class PasswordRecoverDialog extends Dialog {
     private final Locale locale;
     private final MessageSource messageSource;
     private final ConfirmButton confirmButton;
-    private final UserService userService;
-    private final NotificationService notificationService;
+    private final AccountService accountService;
     private final Binder<String> usernameBinder;
     private final TextField usernameField;
-    private final String passwordRecoverLinkPrefix;
 
     public PasswordRecoverDialog(MessageSource messageSource,
                                  Locale locale,
-                                 UserService userService,
-                                 NotificationService notificationService,
-                                 String passwordRecoverLinkPrefix) {
+                                 AccountService accountService) {
         this.locale = locale;
         this.messageSource = messageSource;
-        this.userService = userService;
-        this.notificationService = notificationService;
+        this.accountService = accountService;
         this.usernameBinder = new Binder<>();
-        this.passwordRecoverLinkPrefix = passwordRecoverLinkPrefix;
 
         final String headerText = messageSource.getMessage(LocalizationUtils.UI.PasswordRecoverDialog.HEADER_TEXT, null, locale);
         final String usernameFieldText = messageSource.getMessage(LocalizationUtils.UI.PasswordRecoverDialog.USERNAME_FIELD_TEXT, null, locale);
@@ -92,11 +78,9 @@ public class PasswordRecoverDialog extends Dialog {
                         new String[]{username}, locale);
                 final String accountIsNotVerifiedText = messageSource.getMessage(VALIDATION_ACCOUNT_IS_NOT_VERIFIED_ERROR, null, locale);
 
-                final Optional<UserDto> optionalUserDto = userService.getUserByUsername(username);
-                if (optionalUserDto.isPresent()) {
-                    final UserDto user = optionalUserDto.get();
-                    final AccountDto account = user.getAccountDetails();
-                    final String encodedAccountId = Base64.getEncoder().encodeToString(account.getId().toString().getBytes());
+                final Optional<AccountDto> optionalAccountDto = accountService.getAccountByUsername(username);
+                if (optionalAccountDto.isPresent()) {
+                    final AccountDto account = optionalAccountDto.get();
                     if (account.getStatus().isExpired()) {
                         NotificationFactory.error(accountDoesNotExistValidationText).open();
                         return;
@@ -106,7 +90,7 @@ public class PasswordRecoverDialog extends Dialog {
                         return;
                     }
                     this.removeAll();
-                    this.sendPasswordRecoverNotification(encodedAccountId, user.getEmail());
+                    accountService.createPasswordRecover(account.getId());
 
                     final VerticalLayout verticalLayout = new VerticalLayout();
                     verticalLayout.setSizeFull();
@@ -124,20 +108,5 @@ public class PasswordRecoverDialog extends Dialog {
                 }
             }
         };
-    }
-
-    private void sendPasswordRecoverNotification(final String encodedAccountId, final String userEmail) {
-        final String passwordRecoveringLink = String.format(passwordRecoverLinkPrefix, encodedAccountId);
-        final String verificationAccountSubject = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT,
-                null, locale);
-        final String verificationAccountPattern = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN,
-                null, locale);
-        final NotificationRequest notificationRequest = NotificationRequest.of(
-                String.format(verificationAccountPattern, passwordRecoveringLink),
-                verificationAccountSubject,
-                NotificationProviderType.EMAIL,
-                Set.of(userEmail)
-        );
-        notificationService.send(notificationRequest);
     }
 }

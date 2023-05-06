@@ -40,6 +40,13 @@ public class Account {
     private Set<AccountRole> roles = new HashSet<>();
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "verification_token_id")
-    private VerificationToken verificationToken;
+    @JoinColumn(name = "verification_link_id")
+    private VerificationLink verificationLink;
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "passowrd_recover_link_id")
+    private VerificationLink passwordRecoverLink;
+
+    @OneToOne(mappedBy = "accountDetails")
+    private User user;
 }

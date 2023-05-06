@@ -4,7 +4,7 @@ import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import lombok.Getter;
 
 @Getter
-public enum TokenVerificationResult {
+public enum LinkVerificationResult {
     INCORRECT_VERIFICATION_CREDENTIALS(LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR, true),
     EXPIRED_VERIFICATION_CREDENTIALS(LocalizationUtils.Error.VALIDATION_EXPIRED_VERIFICATION_LINK_ERROR, true),
     SUCCESSFUL_VERIFICATION(LocalizationUtils.UI.RegistrationDialog.SUCCESS_ACCOUNT_VERIFICATION, false);
@@ -12,7 +12,7 @@ public enum TokenVerificationResult {
     private final String localizedMessage;
     private final Boolean isError;
 
-    TokenVerificationResult(String message, Boolean isError) {
+    LinkVerificationResult(String message, Boolean isError) {
         this.localizedMessage = message;
         this.isError = isError;
     }

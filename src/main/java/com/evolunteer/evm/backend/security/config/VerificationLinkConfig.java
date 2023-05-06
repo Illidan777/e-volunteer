@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit;
 
 @Data
 @Configuration
-public class VerificationTokenConfig {
+public class VerificationLinkConfig {
 
     @Value("${verification.token.length}")
     private Integer verificationTokenLength;

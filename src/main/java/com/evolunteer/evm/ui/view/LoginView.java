@@ -30,9 +30,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
 
-    @Value("${password-recover.link.prefix}")
-    private String passwordRecoverLinkPrefix;
-
     public LoginView(MessageSource messageSource, UserService userService, AccountService accountService, NotificationService notificationService){
         final Locale locale = LocalizationUtils.getLocale();
         setSizeFull();
@@ -69,7 +66,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         loginForm.setI18n(i18n);
 
         login.setAction("login");
-        login.addForgotPasswordListener(forgotPasswordEvent -> new PasswordRecoverDialog(messageSource, locale, userService, notificationService, passwordRecoverLinkPrefix).open());
+        login.addForgotPasswordListener(forgotPasswordEvent -> new PasswordRecoverDialog(messageSource, locale, accountService).open());
 
         final H1 logInHeader = new H1(loginHeader);
         final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new RegistrationDialog(messageSource, locale, userService, accountService).open());
