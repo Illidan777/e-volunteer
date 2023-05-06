@@ -170,7 +170,7 @@ public class RegistrationDialog extends Dialog {
                     verticalLayout.setAlignItems(FlexComponent.Alignment.CENTER);
                     verticalLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
-                    final Icon icon = new Icon(VaadinIcon.CHECK_SQUARE_O);
+                    final Icon icon = new Icon(VaadinIcon.ENVELOPE_O);
                     final Span message = new Span(successfullyRegistration);
                     verticalLayout.add(message, icon);
                     add(verticalLayout);

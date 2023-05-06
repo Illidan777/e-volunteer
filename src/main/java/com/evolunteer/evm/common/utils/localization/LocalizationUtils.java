@@ -66,6 +66,20 @@ public class LocalizationUtils {
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class PasswordRecoverDialog {
+            public static final String HEADER_TEXT = "ui.password-recover.header.text";
+            public static final String USERNAME_FIELD_TEXT = "ui.password-recover.username-field.text";
+            public static final String EMAIL_CONFIRMATION_TEXT = "ui.password-recover.email-confirmation.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class PasswordRecoverView {
+            public static final String HEADER_TEXT = PasswordRecoverDialog.HEADER_TEXT;
+            public static final String NEW_PASSWORD_FIELD_TEXT = "ui.password-recover.new-password-field.text";
+            public static final String NEW_PASSWORD_CONFIRMING_FIELD_TEXT = "ui.password-recover.new-password-confirming-field.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class CommonText {
             public static final String CONFIRM_BUTTON_TEXT = "ui.common.confirm-button.text";
             public static final String CANCEL_BUTTON_TEXT = "ui.common.cancel-button.text";
@@ -81,8 +95,11 @@ public class LocalizationUtils {
         public static final String VALIDATION_BIRTHDATE_ERROR = "error.validation.required.birthdate";
         public static final String VALIDATION_USERNAME_ERROR = "error.validation.required.username";
         public static final String VALIDATION_PASSWORD_ERROR = "error.validation.required-and-pattern.password";
+        public static final String VALIDATION_PASSWORD_CONFIRMING_ERROR = "error.validation.password.confirming";
         public static final String VALIDATION_ACCOUNT_ALREADY_EXIST_BY_USERNAME_ERROR = "error.validation.exists.account-by-username";
-        public static final String VALIDATION_VERIFICATION_LINK_ERROR = "error.validation.invalid.verification.link";
+        public static final String VALIDATION_ACCOUNT_DOES_NOT_EXIST_BY_USERNAME_ERROR = "error.validation.not-exists.account-by-username";
+        public static final String VALIDATION_ACCOUNT_IS_NOT_VERIFIED_ERROR = "error.validation.account.not-verified";
+        public static final String VALIDATION_INVALID_LINK_ERROR = "error.validation.invalid.link";
         public static final String VALIDATION_EXPIRED_VERIFICATION_LINK_ERROR = "error.validation.expired.verification.link";
     }
 
@@ -90,5 +107,7 @@ public class LocalizationUtils {
     public static class EmailNotification {
         public static final String ACCOUNT_VERIFICATION_NOTIFICATION_SUBJECT = "account.verification.subject";
         public static final String ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN = "account.verification.subject.pattern";
+        public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT = "account.password-recover.subject";
+        public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN = "account.password-recover.pattern";
     }
 }

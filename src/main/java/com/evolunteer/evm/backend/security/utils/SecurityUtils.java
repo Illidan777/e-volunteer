@@ -12,11 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Stream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SecurityUtils {
-
-    private SecurityUtils() {
-        // Util methods only
-    }
 
     public static boolean isFrameworkInternalRequest(HttpServletRequest request) {
         final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
@@ -38,13 +35,19 @@ public class SecurityUtils {
         public static final String OAUTH_GOOGLE_LOGIN_ROUTE = "/oauth2/authorization/google";
         public static final String INTRODUCTION_ROUTE = "/introduction";
         public static final String ACCOUNT_VERIFICATION = "/verification/**";
+        public static final String PASSWORD_RECOVER = "/password-recover/**";
 
         public static String[] allowedRoutes() {
             return listOfAllowedRoutes().toArray(new String[0]);
         }
 
         private static List<String> listOfAllowedRoutes() {
-            return List.of(ACCOUNT_LOGIN_ROUTE, INTRODUCTION_ROUTE, ACCOUNT_VERIFICATION);
+            return List.of(
+                    ACCOUNT_LOGIN_ROUTE,
+                    INTRODUCTION_ROUTE,
+                    ACCOUNT_VERIFICATION,
+                    PASSWORD_RECOVER
+                    );
         }
     }
 }

@@ -13,12 +13,18 @@ import java.util.Locale;
 
 public class ConfirmButton extends Button {
 
+    private final Locale locale;
+    private final MessageSource messageSource;
+
     public ConfirmButton(MessageSource messageSource, Locale locale, ComponentEventListener<ClickEvent<Button>> clickListener) {
-        this.init(messageSource, locale);
+        this.locale = locale;
+        this.messageSource = messageSource;
+
+        this.init();
         this.addClickListener(clickListener);
     }
 
-    private void init(MessageSource messageSource, Locale locale) {
+    private void init() {
         this.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         final String messageText = messageSource.getMessage(LocalizationUtils.UI.CommonText.CONFIRM_BUTTON_TEXT, null, locale);
         this.setIcon(new Icon(VaadinIcon.CHECK_CIRCLE));

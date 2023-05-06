@@ -138,6 +138,22 @@ public class AccountServiceImpl implements AccountService {
         return optionalAccount.map(accountMapper::mapAccountToAccountDto);
     }
 
+    @Override
+    public Optional<AccountDto> getAccountById(final Long accountId) {
+        final Optional<Account> optionalAccount = accountRepository.findById(accountId);
+        return optionalAccount.map(accountMapper::mapAccountToAccountDto);
+    }
+
+    @Override
+    public void recoverPasswordById(final Long accountId, final String newPassword) {
+        if(Objects.isNull(accountId) || StringUtils.isBlank(newPassword)) {
+            throw new ValidationException("Unable to recover account password. Account id and password can no be absent");
+        }
+        final Account account = this.findAccountById(accountId);
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
     public void updateAccountStatus(final Long accountId, final AccountStatus status) {
         if (Objects.isNull(accountId) || Objects.isNull(status)) {
             throw new ValidationException("Unable to update account status. Account id and status can no be absent");

@@ -1,8 +1,10 @@
 package com.evolunteer.evm.ui.view;
 
+import com.evolunteer.evm.backend.service.notification_management.sender.NotificationService;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
+import com.evolunteer.evm.ui.dialog.PasswordRecoverDialog;
 import com.evolunteer.evm.ui.dialog.RegistrationDialog;
 import com.evolunteer.evm.ui.layout.LanguageLayout;
 import com.evolunteer.evm.ui.utils.RouteUtils;
@@ -17,6 +19,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 
 import java.util.Locale;
@@ -27,7 +30,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
     private final LoginForm login = new LoginForm();
 
-    public LoginView(MessageSource messageSource, UserService userService, AccountService accountService){
+    @Value("${password-recover.link.prefix}")
+    private String passwordRecoverLinkPrefix;
+
+    public LoginView(MessageSource messageSource, UserService userService, AccountService accountService, NotificationService notificationService){
         final Locale locale = LocalizationUtils.getLocale();
         setSizeFull();
         setAlignItems(Alignment.CENTER);
@@ -63,6 +69,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         loginForm.setI18n(i18n);
 
         login.setAction("login");
+        login.addForgotPasswordListener(forgotPasswordEvent -> new PasswordRecoverDialog(messageSource, locale, userService, notificationService, passwordRecoverLinkPrefix).open());
 
         final H1 logInHeader = new H1(loginHeader);
         final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new RegistrationDialog(messageSource, locale, userService, accountService).open());

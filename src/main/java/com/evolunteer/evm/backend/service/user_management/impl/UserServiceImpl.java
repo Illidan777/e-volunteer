@@ -13,10 +13,12 @@ import com.evolunteer.evm.common.mapper.AccountMapper;
 import com.evolunteer.evm.common.mapper.UserMapper;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto registerUser(final CreateUserRequest registrationRequest) {
-        if(Objects.isNull(registrationRequest)) {
+        if (Objects.isNull(registrationRequest)) {
             throw new ValidationException("Unable to create user. Registration request is null!");
         }
         ValidationUtils.validate(registrationRequest);
@@ -39,5 +41,14 @@ public class UserServiceImpl implements UserService {
         final User mappedUser = userMapper.mapRegistrationRequestToUser(registrationRequest);
         mappedUser.setAccountDetails(accountMapper.mapAccountDtoToAccount(createdAccount));
         return userMapper.mapUserToUserDto(userRepository.save(mappedUser));
+    }
+
+    @Override
+    public Optional<UserDto> getUserByUsername(final String username) {
+        if (StringUtils.isBlank(username)) {
+            throw new ValidationException("Unable to get user by username. Username is missing!");
+        }
+        final Optional<User> optionalUser = userRepository.findByAccountDetails_Username(username);
+        return optionalUser.map(userMapper::mapUserToUserDto);
     }
 }

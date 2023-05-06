@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_VERIFICATION_LINK_ERROR;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR;
 
 @Route(RouteUtils.ACCOUNT_VERIFICATION)
 public class AccountVerificationView extends VerticalLayout implements BeforeEnterObserver {
@@ -41,13 +41,13 @@ public class AccountVerificationView extends VerticalLayout implements BeforeEnt
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         final Map<String, List<String>> queryParameters = beforeEnterEvent.getLocation().getQueryParameters().getParameters();
         if (!queryParameters.containsKey(ACCOUNT_ID_QUERY_PARAMETER_NAME) || !queryParameters.containsKey(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME)) {
-            this.addVerificationInfo(VALIDATION_VERIFICATION_LINK_ERROR);
+            this.addVerificationInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
         final String accountId = queryParameters.get(ACCOUNT_ID_QUERY_PARAMETER_NAME).get(0);
         final String token = queryParameters.get(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME).get(0);
         if (StringUtils.isBlank(accountId) || StringUtils.isBlank(token)) {
-            this.addVerificationInfo(VALIDATION_VERIFICATION_LINK_ERROR);
+            this.addVerificationInfo(VALIDATION_INVALID_LINK_ERROR);
             return;
         }
         final TokenVerificationResult tokenVerificationResult = accountService.verifyAccount(accountId, token);

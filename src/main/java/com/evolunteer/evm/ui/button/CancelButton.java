@@ -12,12 +12,18 @@ import java.util.Locale;
 
 public class CancelButton extends Button {
 
+    private final Locale locale;
+    private final MessageSource messageSource;
+
     public CancelButton(MessageSource messageSource, Locale locale,  ComponentEventListener<ClickEvent<Button>> clickListener) {
-        this.init(messageSource, locale);
+        this.locale = locale;
+        this.messageSource = messageSource;
+
+        this.init();
         this.addClickListener(clickListener);
     }
 
-    private void init(MessageSource messageSource, Locale locale) {
+    private void init() {
         final String messageText = messageSource.getMessage(LocalizationUtils.UI.CommonText.CANCEL_BUTTON_TEXT, null, locale);
         this.setIcon(new Icon(VaadinIcon.CLOSE_BIG));
         this.setText(messageText);

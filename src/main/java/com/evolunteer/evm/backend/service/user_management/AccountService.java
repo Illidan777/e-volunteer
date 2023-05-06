@@ -15,4 +15,8 @@ public interface AccountService extends UserDetailsService {
     TokenVerificationResult verifyAccount(String encodedAccountId, String encodedVerificationToken);
 
     Optional<AccountDto> getAccountByUsername(String username);
+
+    Optional<AccountDto> getAccountById(Long accountId);
+
+    void recoverPasswordById(Long accountId, String newPassword);
 }
