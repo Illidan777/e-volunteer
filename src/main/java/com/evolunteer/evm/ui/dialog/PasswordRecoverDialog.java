@@ -2,6 +2,7 @@ package com.evolunteer.evm.ui.dialog;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
+import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.button.CancelButton;
 import com.evolunteer.evm.ui.button.ConfirmButton;
@@ -90,7 +91,7 @@ public class PasswordRecoverDialog extends Dialog {
                         return;
                     }
                     this.removeAll();
-                    accountService.createPasswordRecover(account.getId());
+                    accountService.sendVerificationLink(account.getId(), VerificationLinkType.PASSWORD_RECOVER);
 
                     final VerticalLayout verticalLayout = new VerticalLayout();
                     verticalLayout.setSizeFull();

@@ -2,7 +2,7 @@ package com.evolunteer.evm.common.domain.entity.user_management;
 
 import com.evolunteer.evm.common.domain.enums.user_management.AccountRole;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountStatus;
-import com.evolunteer.evm.common.domain.enums.user_management.AccountType;
+import com.evolunteer.evm.common.domain.enums.user_management.AccountAuthType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -32,7 +32,7 @@ public class Account {
     private AccountStatus status;
 
     @Enumerated(value = EnumType.STRING)
-    private AccountType type;
+    private AccountAuthType authType;
 
     @ElementCollection(targetClass = AccountRole.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "account_role", joinColumns = @JoinColumn(name = "account_id"))

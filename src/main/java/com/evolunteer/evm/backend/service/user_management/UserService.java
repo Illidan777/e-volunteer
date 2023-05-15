@@ -1,13 +1,13 @@
 package com.evolunteer.evm.backend.service.user_management;
 
 import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.request.CreateExternalUserRequest;
 import com.evolunteer.evm.common.domain.request.CreateUserRequest;
-
-import java.util.Optional;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 
-    UserDto registerUser(CreateUserRequest registrationRequest);
+    UserDto registerInternalUser(CreateUserRequest registrationRequest);
 
-    Optional<UserDto> getUserByUsername(String username);
+    UserDto registerExternalUser(CreateExternalUserRequest registrationRequest);
 }

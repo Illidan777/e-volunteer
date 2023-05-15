@@ -6,6 +6,7 @@ import com.evolunteer.evm.backend.service.user_management.VerificationLinkServic
 import com.evolunteer.evm.common.domain.dto.user_management.VerificationLinkDto;
 import com.evolunteer.evm.common.domain.entity.user_management.VerificationLink;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundException;
 import com.evolunteer.evm.common.mapper.VerificationLinkMapper;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +26,12 @@ public class VerificationLinkServiceImpl implements VerificationLinkService {
     private final VerificationLinkConfig verificationLinkConfig;
 
     @Override
-    public VerificationLinkDto create(final String token) {
+    public VerificationLinkDto create(final String token, final VerificationLinkType type) {
         final VerificationLink verificationLink = new VerificationLink();
         verificationLink.setToken(passwordEncoder.encode(token));
         verificationLink.setExpirationTime(LocalDateTime.now().plus(verificationLinkConfig.getVerificationTokenExpiration(),
                 verificationLinkConfig.getChronoUnitType()));
+        verificationLink.setType(type);
         return verificationTokenTransformer.mapVerificationLinkToVerificationLinkDto(verificationTokenRepository.save(verificationLink));
     }
 

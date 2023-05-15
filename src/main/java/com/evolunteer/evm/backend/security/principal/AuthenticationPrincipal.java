@@ -1,5 +1,6 @@
 package com.evolunteer.evm.backend.security.principal;
 
+import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.entity.user_management.Account;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountStatus;
 import lombok.Data;
@@ -14,9 +15,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthenticationPrincipal implements UserDetails {
 
-    private Account account;
+    private AccountDto account;
 
-    public AuthenticationPrincipal(Account account) {
+    public AuthenticationPrincipal(AccountDto account) {
         this.account = Objects.requireNonNull(account);
     }
 

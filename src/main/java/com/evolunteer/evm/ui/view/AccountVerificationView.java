@@ -2,7 +2,9 @@ package com.evolunteer.evm.ui.view;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
+import com.evolunteer.evm.ui.layout.VerificationLinkLayout;
 import com.evolunteer.evm.ui.utils.RouteUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -16,6 +18,7 @@ import com.vaadin.flow.router.Route;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,38 +44,27 @@ public class AccountVerificationView extends VerticalLayout implements BeforeEnt
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
         final Map<String, List<String>> queryParameters = beforeEnterEvent.getLocation().getQueryParameters().getParameters();
         if (!queryParameters.containsKey(ACCOUNT_ID_QUERY_PARAMETER_NAME) || !queryParameters.containsKey(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME)) {
-            this.addVerificationInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
             return;
         }
         final String accountId = queryParameters.get(ACCOUNT_ID_QUERY_PARAMETER_NAME).get(0);
         final String token = queryParameters.get(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME).get(0);
         if (StringUtils.isBlank(accountId) || StringUtils.isBlank(token)) {
-            this.addVerificationInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
+            return;
+        }
+        final long decodedAccountId;
+        try {
+            decodedAccountId = Long.parseLong(new String(Base64.getDecoder().decode(accountId)));
+        } catch (IllegalArgumentException e) {
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
             return;
         }
         final LinkVerificationResult linkVerificationResult = accountService.verifyAccount(accountId, token);
-        this.addVerificationInfo(linkVerificationResult.getLocalizedMessage());
-    }
-
-    private void addVerificationInfo(final String message) {
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        final Div verificationInfoDiv = new Div();
-        verificationInfoDiv.setWidth("100%");
-        verificationInfoDiv.getStyle().set("text-align", "center");
-        final Button goBackToLogin = new Button(
-                messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.GO_BACK_TO_LOGIN_BUTTON_TEXT, null, locale),
-                event -> UI.getCurrent().navigate(RouteUtils.LOGIN_ROUTE)
-        );
-        goBackToLogin.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        verificationInfoDiv.setText(messageSource.getMessage(message, null, locale));
-
-        final HorizontalLayout buttonLayout = new HorizontalLayout(goBackToLogin);
-        buttonLayout.setWidth("100%");
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-
-        verificationInfoDiv.add(buttonLayout);
-        this.add(verificationInfoDiv);
+        if(linkVerificationResult.isSuccess()) {
+            this.add(new VerificationLinkLayout(messageSource, locale, linkVerificationResult.getLocalizedMessage()));
+        } else {
+            this.add(new VerificationLinkLayout(accountService, messageSource, locale, linkVerificationResult.getLocalizedMessage(), VerificationLinkType.ACCOUNT_VERIFICATION, decodedAccountId));
+        }
     }
 }

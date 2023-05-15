@@ -62,7 +62,6 @@ public class LocalizationUtils {
             public static final String PASSWORD_FIELD_TEXT = "ui.registration.password-field.text";
             public static final String SUCCESS_REGISTRATION_TEXT = "ui.registration.success.text";
             public static final String SUCCESS_ACCOUNT_VERIFICATION = "ui.registration.account.verification.success.text";
-            public static final String GO_BACK_TO_LOGIN_BUTTON_TEXT = "ui.registration.account.verification.go-back-to-login-button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -84,6 +83,12 @@ public class LocalizationUtils {
             public static final String CONFIRM_BUTTON_TEXT = "ui.common.confirm-button.text";
             public static final String CANCEL_BUTTON_TEXT = "ui.common.cancel-button.text";
         }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class VerificationLinkLayout {
+            public static final String GO_BACK_TO_LOGIN_BUTTON_TEXT = "ui.verification-layout.go-back-to-login-button.text";
+            public static final String GET_NEW_LINK_BUTTON_TEXT = "ui.verification-layout.get-new-link-button.text";
+        }
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -101,6 +106,7 @@ public class LocalizationUtils {
         public static final String VALIDATION_ACCOUNT_IS_NOT_VERIFIED_ERROR = "error.validation.account.not-verified";
         public static final String VALIDATION_INVALID_LINK_ERROR = "error.validation.invalid.link";
         public static final String VALIDATION_EXPIRED_VERIFICATION_LINK_ERROR = "error.validation.expired.verification.link";
+        public static final String AUTHORIZATION_ERROR = "error.authorization";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

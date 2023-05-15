@@ -5,6 +5,7 @@ import com.evolunteer.evm.backend.security.handler.Oauth2FailureHandler;
 import com.evolunteer.evm.backend.security.handler.Oauth2SuccessHandler;
 import com.evolunteer.evm.backend.security.utils.SecurityUtils;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
+import com.evolunteer.evm.backend.service.user_management.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -30,17 +31,21 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private static final String LOGIN_PROCESSING_URL = "/login";
-    private static final String LOGIN_FAILURE_URL = "/login?error";
-    private static final String LOGIN_URL = "/login";
-    private static final String LOGOUT_SUCCESS_URL = "/introduction";
 
+
+    private UserService userService;
     private AccountService accountService;
 
     @Autowired
     @Lazy
     public void setAccountService(AccountService accountService) {
         this.accountService = accountService;
+    }
+
+    @Autowired
+    @Lazy
+    public void setUserService(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -51,19 +56,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable()
                 .requestCache().requestCache(new CustomRequestCache())
                 .and()
-                    .authorizeRequests()
-                    .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
-                    .antMatchers(SecurityUtils.Route.allowedRoutes())
-                    .permitAll()
-                    .anyRequest().authenticated()
+                .authorizeRequests()
+                .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+                .antMatchers(SecurityUtils.Route.allowedRoutes())
+                .permitAll()
+                .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                    .loginPage(LOGIN_URL).permitAll()
-                    .loginProcessingUrl(LOGIN_PROCESSING_URL)
-                    .failureUrl(LOGIN_FAILURE_URL)
+                .loginPage(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE).permitAll()
+                .loginProcessingUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
+                .failureUrl(SecurityUtils.Route.ACCOUNT_LOGIN_FAILURE_ROUTE)
                 .and()
-                    .logout()
-                    .logoutSuccessUrl(LOGOUT_SUCCESS_URL)
+                .logout()
+                .logoutSuccessUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
                 .and()
                 .oauth2Login()
                 .loginPage(SecurityUtils.Route.OAUTH_GOOGLE_LOGIN_ROUTE)
@@ -123,7 +128,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public AuthenticationSuccessHandler oauthSuccessHandler() {
-        return new Oauth2SuccessHandler();
+        return new Oauth2SuccessHandler(accountService, userService);
     }
 
     @Bean

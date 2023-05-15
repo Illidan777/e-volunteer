@@ -2,14 +2,20 @@ package com.evolunteer.evm.backend.service.user_management;
 
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
+import com.evolunteer.evm.common.domain.request.CreateExternalAccountRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;
 
 public interface AccountService extends UserDetailsService {
 
-    AccountDto createAccount(CreateAccountRequest accountRequest);
+    AccountDto createInternalAccount(CreateAccountRequest accountRequest);
+
+    AccountDto createExternalAccount(CreateExternalAccountRequest accountRequest);
+
+    void sendVerificationLink(Long accountId, VerificationLinkType type);
 
     LinkVerificationResult verifyAccount(String encodedAccountId, String encodedVerificationToken);
 
@@ -18,6 +24,4 @@ public interface AccountService extends UserDetailsService {
     Optional<AccountDto> getAccountByUsername(String username);
 
     Optional<AccountDto> getAccountById(Long accountId);
-
-    void createPasswordRecover(Long accountId);
 }

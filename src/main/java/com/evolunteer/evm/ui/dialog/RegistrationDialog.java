@@ -159,7 +159,7 @@ public class RegistrationDialog extends Dialog {
                 if (optionalAccountDto.isPresent() && !optionalAccountDto.get().getStatus().isExpired()) {
                     NotificationFactory.error(accountAlreadyExistValidationText).open();
                 } else  {
-                    userService.registerUser(createUserRequest);
+                    userService.registerInternalUser(createUserRequest);
                     this.removeAll();
                     this.setWidth("500px");
                     this.setHeight("300px");

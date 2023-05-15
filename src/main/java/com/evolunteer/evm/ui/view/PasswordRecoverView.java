@@ -4,10 +4,12 @@ import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.VerificationLinkService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import com.evolunteer.evm.ui.binder.bean.PasswordRecoveringBean;
 import com.evolunteer.evm.ui.button.ConfirmButton;
+import com.evolunteer.evm.ui.layout.VerificationLinkLayout;
 import com.evolunteer.evm.ui.notification.NotificationFactory;
 import com.evolunteer.evm.ui.utils.RouteUtils;
 import com.vaadin.flow.component.ClickEvent;
@@ -62,14 +64,14 @@ public class PasswordRecoverView extends VerticalLayout implements BeforeEnterOb
         if (!queryParameters.containsKey(ACCOUNT_ID_QUERY_PARAMETER_NAME)
                 || !queryParameters.containsKey(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME)
                 || !queryParameters.containsKey(LINK_ID_QUERY_PARAMETER_NAME)) {
-            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
             return;
         }
         final String accountId = queryParameters.get(ACCOUNT_ID_QUERY_PARAMETER_NAME).get(0);
         final String token = queryParameters.get(VERIFICATION_TOKEN_QUERY_PARAMETER_NAME).get(0);
         final String linkId = queryParameters.get(LINK_ID_QUERY_PARAMETER_NAME).get(0);
         if (StringUtils.isBlank(accountId) || StringUtils.isBlank(token) || StringUtils.isBlank(linkId)) {
-            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
             return;
         }
         final long decodedAccountId;
@@ -78,17 +80,18 @@ public class PasswordRecoverView extends VerticalLayout implements BeforeEnterOb
             decodedAccountId = Long.parseLong(new String(Base64.getDecoder().decode(accountId)));
             decodedLinkId = Long.parseLong(new String(Base64.getDecoder().decode(linkId)));
         } catch (IllegalArgumentException e) {
-            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
             return;
         }
         final LinkVerificationResult linkVerificationResult = verificationLinkService.verifyLink(decodedLinkId, token);
         if(!linkVerificationResult.isSuccess()) {
-            this.addInvalidLinkInfo(linkVerificationResult.getLocalizedMessage());
+            this.add(new VerificationLinkLayout(accountService, messageSource, locale,
+                    linkVerificationResult.getLocalizedMessage(), VerificationLinkType.PASSWORD_RECOVER, decodedAccountId));
             return;
         }
         final Optional<AccountDto> optionalAccountDto = accountService.getAccountById(decodedAccountId);
         if (optionalAccountDto.isEmpty()) {
-            this.addInvalidLinkInfo(VALIDATION_INVALID_LINK_ERROR);
+            this.add(new VerificationLinkLayout(messageSource, locale, VALIDATION_INVALID_LINK_ERROR));
         } else {
             this.addPasswordRecoveringComponents(decodedAccountId);
         }
@@ -150,27 +153,5 @@ public class PasswordRecoverView extends VerticalLayout implements BeforeEnterOb
 
             }
         };
-    }
-
-    private void addInvalidLinkInfo(final String message) {
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
-        final Div invalidLinkInfoDiv = new Div();
-        invalidLinkInfoDiv.setWidth("100%");
-        invalidLinkInfoDiv.getStyle().set("text-align", "center");
-        final Button goBackToLogin = new Button(
-                messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.GO_BACK_TO_LOGIN_BUTTON_TEXT, null, locale),
-                event -> UI.getCurrent().navigate(RouteUtils.LOGIN_ROUTE)
-        );
-        goBackToLogin.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        invalidLinkInfoDiv.setText(messageSource.getMessage(message, null, locale));
-
-        final HorizontalLayout buttonLayout = new HorizontalLayout(goBackToLogin);
-        buttonLayout.setWidth("100%");
-        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-
-        invalidLinkInfoDiv.add(buttonLayout);
-        this.add(invalidLinkInfoDiv);
     }
 }

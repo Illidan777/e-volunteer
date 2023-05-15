@@ -12,13 +12,12 @@ import com.evolunteer.evm.common.domain.dto.user_management.VerificationLinkDto;
 import com.evolunteer.evm.common.domain.entity.user_management.Account;
 import com.evolunteer.evm.common.domain.entity.user_management.User;
 import com.evolunteer.evm.common.domain.enums.notification_management.NotificationProviderType;
-import com.evolunteer.evm.common.domain.enums.user_management.AccountRole;
-import com.evolunteer.evm.common.domain.enums.user_management.AccountStatus;
-import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
+import com.evolunteer.evm.common.domain.enums.user_management.*;
 import com.evolunteer.evm.common.domain.exception.common.AlreadyExistException;
 import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundException;
 import com.evolunteer.evm.common.domain.exception.validation.ValidationException;
 import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
+import com.evolunteer.evm.common.domain.request.CreateExternalAccountRequest;
 import com.evolunteer.evm.common.mapper.AccountMapper;
 import com.evolunteer.evm.common.mapper.VerificationLinkMapper;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
@@ -66,11 +65,11 @@ public class AccountServiceImpl implements AccountService {
         if (StringUtils.isBlank(username)) {
             throw new ValidationException(String.format("Unable load account info by username %s. Username must be specified!", username));
         }
-        return new AuthenticationPrincipal(this.findAccountByUsername(username));
+        return new AuthenticationPrincipal(accountMapper.mapAccountToAccountDto(this.findAccountByUsername(username)));
     }
 
     @Override
-    public AccountDto createAccount(final CreateAccountRequest accountRequest) {
+    public AccountDto createInternalAccount(final CreateAccountRequest accountRequest) {
         if (Objects.isNull(accountRequest)) {
             throw new ValidationException("Unable to create account. Account is null!");
         }
@@ -79,47 +78,54 @@ public class AccountServiceImpl implements AccountService {
         final String username = accountRequest.getUsername();
         final String password = accountRequest.getPassword();
 
-        final Optional<Account> optionalAccount = accountRepository.findByUsername(username);
-        if (optionalAccount.isPresent()) {
-            final Account existedAccount = optionalAccount.get();
-            if (existedAccount.getStatus().isExpired()) {
-                accountRepository.delete(existedAccount);
-            } else {
-                throw new AlreadyExistException(
-                        format("Account have already registered by email: %s", username));
-            }
+        if (accountRepository.findByUsername(username).isPresent()) {
+            throw new AlreadyExistException(
+                    format("Account has already registered by username: %s", username));
         }
-        final String generatedToken = new StringGenerator.StringGeneratorBuilder()
-                .useDigits(true)
-                .useLower(true)
-                .useLower(true)
-                .useUpper(true)
-                .build()
-                .generate(verificationLinkConfig.getVerificationTokenLength());
-        final VerificationLinkDto verificationToken = verificationLinkService.create(generatedToken);
-        final String encodedToken = Base64.getEncoder().encodeToString(generatedToken.getBytes());
 
         final Account mappedAccount = new Account();
         mappedAccount.setUsername(username);
         mappedAccount.setPassword(passwordEncoder.encode(password));
         mappedAccount.setStatus(AccountStatus.NOT_VERIFIED);
+        mappedAccount.setAuthType(AccountAuthType.INTERNAL);
         mappedAccount.setRoles(new HashSet<>(Collections.singleton(AccountRole.ROLE_VOLUNTEER)));
-        mappedAccount.setVerificationLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationToken));
         final Account savedAccount = accountRepository.save(mappedAccount);
-
-        final String encodedAccountId = Base64.getEncoder().encodeToString(String.valueOf(savedAccount.getId()).getBytes());
-        this.sendVerificationNotification(accountRequest, encodedToken, encodedAccountId);
-
+        this.sendVerificationLink(savedAccount, VerificationLinkType.ACCOUNT_VERIFICATION, accountRequest.getEmail());
         return accountMapper.mapAccountToAccountDto(savedAccount);
     }
 
     @Override
-    public void createPasswordRecover(final Long accountId) {
-        if (Objects.isNull(accountId)) {
-            throw new ValidationException("Unable to create account password recover. Account id can not be absent");
+    public AccountDto createExternalAccount(final CreateExternalAccountRequest accountRequest) {
+        if (Objects.isNull(accountRequest)) {
+            throw new ValidationException("Unable to external create account. Account is null!");
         }
+        ValidationUtils.validate(accountRequest);
+
+        final String username = accountRequest.getUsername();
+        final AccountAuthType authType = accountRequest.getAuthType();
+
+        final Optional<Account> optionalAccount = accountRepository.findByUsername(username);
+        if (optionalAccount.isPresent()) {
+            throw new AlreadyExistException(
+                    format("External account have already registered by username: %s", username));
+        }
+        final Account mappedAccount = new Account();
+        mappedAccount.setUsername(username);
+        mappedAccount.setAuthType(authType);
+        mappedAccount.setStatus(AccountStatus.VERIFIED);
+        mappedAccount.setRoles(new HashSet<>(Collections.singleton(AccountRole.ROLE_VOLUNTEER)));
+        final Account savedAccount = accountRepository.save(mappedAccount);
+        return accountMapper.mapAccountToAccountDto(savedAccount);
+    }
+
+    @Override
+    public void sendVerificationLink(final Long accountId, final VerificationLinkType type) {
         final Account account = this.findAccountById(accountId);
         final User user = account.getUser();
+        this.sendVerificationLink(account, type, user.getEmail());
+    }
+
+    private void sendVerificationLink(final Account account, final VerificationLinkType type, final String email) {
         final String generatedToken = new StringGenerator.StringGeneratorBuilder()
                 .useDigits(true)
                 .useLower(true)
@@ -127,15 +133,48 @@ public class AccountServiceImpl implements AccountService {
                 .useUpper(true)
                 .build()
                 .generate(verificationLinkConfig.getVerificationTokenLength());
-        final VerificationLinkDto verificationLinkDto = verificationLinkService.create(generatedToken);
-        account.setPasswordRecoverLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationLinkDto));
+        final VerificationLinkDto verificationLinkDto = verificationLinkService.create(generatedToken, type);
+
+        final String linkPrefix;
+        final String notificationSubject;
+        final String notificationPattern;
+        switch (type) {
+            case ACCOUNT_VERIFICATION: {
+                account.setVerificationLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationLinkDto));
+                account.setStatus(AccountStatus.NOT_VERIFIED);
+                linkPrefix = verificationLinkPrefix;
+                notificationSubject = messageSource.getMessage(ACCOUNT_VERIFICATION_NOTIFICATION_SUBJECT,
+                        null, LocalizationUtils.getLocale());
+                notificationPattern = messageSource.getMessage(ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN,
+                        null, LocalizationUtils.getLocale());
+                break;
+            }
+            case PASSWORD_RECOVER: {
+                account.setPasswordRecoverLink(verificationLinkMapper.mapVerificationLinkDtoToVerificationLink(verificationLinkDto));
+                linkPrefix = passwordRecoverLinkPrefix;
+                notificationSubject = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT,
+                        null, LocalizationUtils.getLocale());
+                notificationPattern = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN,
+                        null, LocalizationUtils.getLocale());
+                break;
+            }
+            default:
+                throw new IllegalArgumentException("Unsupported verification link type!");
+        }
         accountRepository.save(account);
-        this.sendPasswordRecoverNotification(
-                Base64.getEncoder().encodeToString(String.valueOf(accountId).getBytes()),
+
+        final String verificationLink = String.format(linkPrefix,
+                Base64.getEncoder().encodeToString(String.valueOf(account.getId()).getBytes()),
                 Base64.getEncoder().encodeToString(String.valueOf(verificationLinkDto.getId()).getBytes()),
-                Base64.getEncoder().encodeToString(generatedToken.getBytes()),
-                user.getEmail()
+                Base64.getEncoder().encodeToString(generatedToken.getBytes()));
+
+        final NotificationRequest notificationRequest = NotificationRequest.of(
+                String.format(notificationPattern, verificationLink),
+                notificationSubject,
+                NotificationProviderType.EMAIL,
+                Set.of(email)
         );
+        notificationService.send(notificationRequest);
     }
 
     @Override
@@ -194,38 +233,6 @@ public class AccountServiceImpl implements AccountService {
                 new ResourceNotFoundException(format("Account does not exist by id: %s", accountId)));
         account.setStatus(status);
         accountRepository.save(account);
-    }
-
-    private void sendVerificationNotification(final CreateAccountRequest createAccountRequest,
-                                              final String encodedToken,
-                                              final String encodedAccountId) {
-        final String verificationLink = String.format(verificationLinkPrefix, encodedAccountId, encodedToken);
-        final String verificationAccountSubject = messageSource.getMessage(ACCOUNT_VERIFICATION_NOTIFICATION_SUBJECT,
-                null, LocalizationUtils.getLocale());
-        final String verificationAccountPattern = messageSource.getMessage(ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN,
-                null, LocalizationUtils.getLocale());
-        final NotificationRequest notificationRequest = NotificationRequest.of(
-                String.format(verificationAccountPattern, verificationLink, createAccountRequest.getUsername(), createAccountRequest.getPassword()),
-                verificationAccountSubject,
-                NotificationProviderType.EMAIL,
-                Set.of(createAccountRequest.getEmail())
-        );
-        notificationService.send(notificationRequest);
-    }
-
-    private void sendPasswordRecoverNotification(final String encodedAccountId, final String encodedLinkId, final String encodedToken, final String userEmail) {
-        final String passwordRecoveringLink = String.format(passwordRecoverLinkPrefix, encodedAccountId, encodedLinkId, encodedToken);
-        final String verificationAccountSubject = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT,
-                null, LocalizationUtils.getLocale());
-        final String verificationAccountPattern = messageSource.getMessage(ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN,
-                null, LocalizationUtils.getLocale());
-        final NotificationRequest notificationRequest = NotificationRequest.of(
-                String.format(verificationAccountPattern, passwordRecoveringLink),
-                verificationAccountSubject,
-                NotificationProviderType.EMAIL,
-                Set.of(userEmail)
-        );
-        notificationService.send(notificationRequest);
     }
 
     private Account findAccountByUsername(final String username) {
