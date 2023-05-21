@@ -16,6 +16,13 @@ public class DeleteButton extends Button{
     private final Locale locale;
     private final MessageSource messageSource;
 
+    public DeleteButton(MessageSource messageSource, Locale locale) {
+        this.locale = locale;
+        this.messageSource = messageSource;
+
+        this.init();
+    }
+
     public DeleteButton(MessageSource messageSource, Locale locale, ComponentEventListener<ClickEvent<Button>> clickListener) {
         this.locale = locale;
         this.messageSource = messageSource;

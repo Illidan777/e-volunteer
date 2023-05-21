@@ -91,17 +91,36 @@ public class UserProfileView extends VerticalLayout {
 
     private Div createProfilePictureDiv() {
         final H3Header profilePictureHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.UserProfileView.PROFILE_PICTURE_HEADER_TEXT);
+        final SaveButton saveButton = new SaveButton(messageSource, locale);
+        final DeleteButton deleteButton = new DeleteButton(messageSource, locale);
+        final HorizontalLayout buttonLayout = new HorizontalLayout();
+        buttonLayout.setAlignItems(Alignment.START);
+        buttonLayout.setJustifyContentMode(JustifyContentMode.START);
+
         final Div profilePicturDiv = new Div(profilePictureHeader);
         final SingleFileUploader pictureUploader = new SingleFileUploader(messageSource, locale, fileService, userProfilePictureValidator);
         final String userPictureFileCode;
-        if (Objects.nonNull(contextUser.getPicture())) {
+        final boolean isPicturePresent = Objects.nonNull(contextUser.getPicture());
+        if (isPicturePresent) {
             userPictureFileCode = contextUser.getPicture().getFileCode();
             if (pictureUploader.isAttached()) {
                 this.remove(pictureUploader);
             }
+            if(saveButton.isAttached()) {
+                this.remove(saveButton);
+            }
+            if(!deleteButton.isAttached()) {
+                buttonLayout.add(deleteButton);
+            }
         } else {
             if (!pictureUploader.isAttached()) {
                 profilePicturDiv.add(pictureUploader);
+            }
+            if(!saveButton.isAttached()) {
+                buttonLayout.add(saveButton);
+            }
+            if(deleteButton.isAttached()) {
+                buttonLayout.remove(deleteButton);
             }
             userPictureFileCode = null;
         }
@@ -112,12 +131,9 @@ public class UserProfileView extends VerticalLayout {
         pictureUploader.addSucceededListener(event -> {
             atomicUploadedPicture.set(pictureUploader.handleSucceededUpload(event));
         });
+        saveButton.addClickListener(this.updateUserPicture(atomicUploadedPicture));
+        deleteButton.addClickListener(this.deleteUserPicture(userPictureFileCode));
 
-        final SaveButton saveButton = new SaveButton(messageSource, locale, this.updateUserPicture(atomicUploadedPicture));
-        final DeleteButton deleteButton = new DeleteButton(messageSource, locale, this.deleteUserPicture(userPictureFileCode));
-        final HorizontalLayout buttonLayout = new HorizontalLayout(saveButton, deleteButton);
-        buttonLayout.setAlignItems(Alignment.START);
-        buttonLayout.setJustifyContentMode(JustifyContentMode.START);
 
         profilePicturDiv.add(
                 userProfilePicture,

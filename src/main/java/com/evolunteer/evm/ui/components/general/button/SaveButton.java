@@ -16,6 +16,13 @@ public class SaveButton extends Button{
     private final Locale locale;
     private final MessageSource messageSource;
 
+    public SaveButton(MessageSource messageSource, Locale locale) {
+        this.locale = locale;
+        this.messageSource = messageSource;
+
+        this.init();
+    }
+
     public SaveButton(MessageSource messageSource, Locale locale, ComponentEventListener<ClickEvent<Button>> clickListener) {
         this.locale = locale;
         this.messageSource = messageSource;
