@@ -8,7 +8,7 @@ import com.evolunteer.evm.common.domain.entity.user_management.VerificationLink;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
 import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
 import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundException;
-import com.evolunteer.evm.common.mapper.VerificationLinkMapper;
+import com.evolunteer.evm.common.mapper.user_management.VerificationLinkMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

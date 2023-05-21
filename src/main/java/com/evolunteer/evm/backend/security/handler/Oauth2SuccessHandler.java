@@ -40,6 +40,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     public void onAuthenticationSuccess(final HttpServletRequest request,
                                         final HttpServletResponse response,
                                         final Authentication authentication) throws IOException, ServletException {
+        log.info("[Oauth2SuccessHandler] Success handling oauth authentication.");
         final OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
         final OAuth2User user = token.getPrincipal();
 
@@ -74,6 +75,6 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         }
         UsernamePasswordAuthenticationToken result = UsernamePasswordAuthenticationToken.authenticated(account, authentication.getCredentials(), user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(result);
-        response.sendRedirect("/");
+        response.sendRedirect(SecurityUtils.Route.HOME_REDIRECT_ROUTE);
     }
 }

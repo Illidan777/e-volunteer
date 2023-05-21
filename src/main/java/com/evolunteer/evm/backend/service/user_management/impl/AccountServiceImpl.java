@@ -18,8 +18,8 @@ import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundExcepti
 import com.evolunteer.evm.common.domain.exception.validation.ValidationException;
 import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
 import com.evolunteer.evm.common.domain.request.CreateExternalAccountRequest;
-import com.evolunteer.evm.common.mapper.AccountMapper;
-import com.evolunteer.evm.common.mapper.VerificationLinkMapper;
+import com.evolunteer.evm.common.mapper.user_management.AccountMapper;
+import com.evolunteer.evm.common.mapper.user_management.VerificationLinkMapper;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.string.StringGenerator;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;

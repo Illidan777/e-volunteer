@@ -48,10 +48,12 @@ public class SecurityUtils {
     public static class Route {
         public static final String ACCOUNT_LOGIN_FAILURE_ROUTE = "/login?error";
         public static final String ACCOUNT_LOGIN_ROUTE = "/login";
+        public static final String ACCOUNT_LOGOUT_ROUTE = "/logout";
         public static final String OAUTH_GOOGLE_LOGIN_ROUTE = "/oauth2/authorization/google";
         public static final String INTRODUCTION_ROUTE = "/introduction";
         public static final String ACCOUNT_VERIFICATION_ROUTE = "/verification/**";
         public static final String PASSWORD_RECOVER_ROUTE = "/password-recover/**";
+        public static final String HOME_REDIRECT_ROUTE = "/home";
 
         public static String[] allowedRoutes() {
             return listOfAllowedRoutes().toArray(new String[0]);

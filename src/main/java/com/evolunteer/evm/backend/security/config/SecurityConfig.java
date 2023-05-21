@@ -1,6 +1,7 @@
 package com.evolunteer.evm.backend.security.config;
 
 import com.evolunteer.evm.backend.security.cache.CustomRequestCache;
+import com.evolunteer.evm.backend.security.handler.LoginPageAuthenticationSuccessHandler;
 import com.evolunteer.evm.backend.security.handler.Oauth2FailureHandler;
 import com.evolunteer.evm.backend.security.handler.Oauth2SuccessHandler;
 import com.evolunteer.evm.backend.security.utils.SecurityUtils;
@@ -19,6 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -26,6 +28,11 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @EnableWebSecurity
 @Configuration
@@ -64,16 +71,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE).permitAll()
+                .successHandler(this.loginPageSuccessHandler())
                 .loginProcessingUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
                 .failureUrl(SecurityUtils.Route.ACCOUNT_LOGIN_FAILURE_ROUTE)
-                .and()
-                .logout()
-                .logoutSuccessUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
                 .and()
                 .oauth2Login()
                 .loginPage(SecurityUtils.Route.OAUTH_GOOGLE_LOGIN_ROUTE)
                 .successHandler(this.oauthSuccessHandler())
                 .failureHandler(this.oauthFailureHandler())
+                .and()
+                .logout()
+                .logoutUrl(SecurityUtils.Route.ACCOUNT_LOGOUT_ROUTE)
+                .logoutSuccessUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
+                .invalidateHttpSession(true)
         ;
     }
 
@@ -129,6 +139,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationSuccessHandler oauthSuccessHandler() {
         return new Oauth2SuccessHandler(accountService, userService);
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler loginPageSuccessHandler() {
+        return new LoginPageAuthenticationSuccessHandler();
     }
 
     @Bean

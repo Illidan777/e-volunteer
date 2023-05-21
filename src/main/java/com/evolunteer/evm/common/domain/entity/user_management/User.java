@@ -1,5 +1,6 @@
 package com.evolunteer.evm.common.domain.entity.user_management;
 
+import com.evolunteer.evm.common.domain.dto.file_management.EmbeddableFile;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -25,6 +26,13 @@ public class User {
     private String email;
 
     private Date birthDate;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "fileName", column = @Column(name = "picture_file_name")),
+            @AttributeOverride(name = "fileCode", column = @Column(name = "picture_file_code")),
+    })
+    private EmbeddableFile picture;
 
     @OneToOne
     @JoinColumn(name = "account_id")

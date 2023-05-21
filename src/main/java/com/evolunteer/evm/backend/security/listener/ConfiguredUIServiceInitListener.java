@@ -1,10 +1,10 @@
 package com.evolunteer.evm.backend.security.listener;
 
 import com.evolunteer.evm.backend.security.utils.SecurityUtils;
-import com.evolunteer.evm.ui.view.AccountVerificationView;
-import com.evolunteer.evm.ui.view.IntroductionView;
-import com.evolunteer.evm.ui.view.LoginView;
-import com.evolunteer.evm.ui.view.PasswordRecoverView;
+import com.evolunteer.evm.ui.components.app.layout.view.login.AccountVerificationView;
+import com.evolunteer.evm.ui.components.app.layout.view.intro.IntroductionView;
+import com.evolunteer.evm.ui.components.app.layout.view.login.LoginView;
+import com.evolunteer.evm.ui.components.app.layout.view.login.PasswordRecoverView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;

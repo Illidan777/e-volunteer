@@ -2,6 +2,8 @@ package com.evolunteer.evm.common.utils.localization;
 
 import com.evolunteer.evm.ui.utils.CookieUtils;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Locale;
@@ -13,14 +15,15 @@ public class LocalizationUtils {
     public static final String ENGLISH_LANGUAGE = "en";
     public static final String UKRAINIAN_LANGUAGE = "ukr";
 
-    public static final Map<String, Locale> SUPPORTED_LOCALE_MAP = Map.of(
-            ENGLISH_LANGUAGE, new Locale(ENGLISH_LANGUAGE),
-            UKRAINIAN_LANGUAGE, new Locale(UKRAINIAN_LANGUAGE)
+    public static final Map<String, LocaleWrapper> SUPPORTED_LOCALE_MAP = Map.of(
+            ENGLISH_LANGUAGE, LocaleWrapper.of(UI.Language.ENGLISH_LANGUAGE_TEXT, new Locale(ENGLISH_LANGUAGE)),
+            UKRAINIAN_LANGUAGE, LocaleWrapper.of(UI.Language.UKRAINIAN_LANGUAGE_TEXT, new Locale(UKRAINIAN_LANGUAGE))
     );
 
     public static Locale getLocale() {
         return CookieUtils.getCookieValue(CookieUtils.LANGUAGE_COOKIE_NAME)
-                .map(cookie -> SUPPORTED_LOCALE_MAP.getOrDefault(cookie.getValue(), Locale.getDefault()))
+                .map(cookie -> SUPPORTED_LOCALE_MAP.getOrDefault(cookie.getValue(),
+                        LocaleWrapper.of(UI.Language.ENGLISH_LANGUAGE_TEXT, Locale.getDefault())).getLocale())
                 .orElse(Locale.getDefault());
     }
 
@@ -76,18 +79,55 @@ public class LocalizationUtils {
             public static final String HEADER_TEXT = PasswordRecoverDialog.HEADER_TEXT;
             public static final String NEW_PASSWORD_FIELD_TEXT = "ui.password-recover.new-password-field.text";
             public static final String NEW_PASSWORD_CONFIRMING_FIELD_TEXT = "ui.password-recover.new-password-confirming-field.text";
+            public static final String PASSWORD_SUCCESSFULLY_UPDATED = "ui.password-recover.password.successfully-updated.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class UserProfileView {
+            public static final String PERSONAL_DATA_HEADER_TEXT = "ui.user-profile.personal-data.header.text";
+            public static final String PROFILE_PICTURE_HEADER_TEXT = "ui.user-profile.profile-picture.header.text";
+            public static final String NAME_FIELD_TEXT = RegistrationDialog.NAME_FIELD_TEXT;
+            public static final String SURNAME_FIELD_TEXT = RegistrationDialog.SURNAME_FIELD_TEXT;
+            public static final String MIDDLE_NAME_FIELD_TEXT = RegistrationDialog.MIDDLE_NAME_FIELD_TEXT;
+            public static final String PHONE_FIELD_TEXT = RegistrationDialog.PHONE_FIELD_TEXT;
+            public static final String EMAIL_FIELD_TEXT = RegistrationDialog.EMAIL_FIELD_TEXT;
+            public static final String BIRTHDATE_FIELD_TEXT = RegistrationDialog.BIRTHDATE_FIELD_TEXT;
+            public static final String PERSONAL_DATA_SUCCESSFULLY_UPDATED = "ui.user-profile.personal-data.successfully-updated.text";
+            public static final String PICTURE_SUCCESSFULLY_UPDATED = "ui.user-profile.picture.successfully-updated.text";
+            public static final String PICTURE_SUCCESSFULLY_DELETED = "ui.user-profile.picture.successfully-deleted.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class Language {
+            public static final String ENGLISH_LANGUAGE_TEXT = "ui.language.english.text";
+            public static final String UKRAINIAN_LANGUAGE_TEXT = "ui.language.ukrainian.text";
+            public static final String CHOOSE_LANGUAGE_TEXT = "ui.language.choose-language-header";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class CommonText {
             public static final String CONFIRM_BUTTON_TEXT = "ui.common.confirm-button.text";
             public static final String CANCEL_BUTTON_TEXT = "ui.common.cancel-button.text";
+            public static final String SAVE_BUTTON_TEXT = "ui.common.save-button.text";
+            public static final String DELETE_BUTTON_TEXT = "ui.common.delete-button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class VerificationLinkLayout {
             public static final String GO_BACK_TO_LOGIN_BUTTON_TEXT = "ui.verification-layout.go-back-to-login-button.text";
             public static final String GET_NEW_LINK_BUTTON_TEXT = "ui.verification-layout.get-new-link-button.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class NavigationLayout {
+            public static final String HEADER_TEXT = "ui.navigation-layout.header.text";
+            public static final String ITEM_MY_PROFILE_TEXT = "ui.navigation-layout.item.my-profile.header.text";
+            public static final String LOG_OUT_BUTTON_TEXT = "ui.navigation-layout.log-out.button.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class FileUpload {
+            public static final String SUCCESS = "ui.file-upload.success";
         }
     }
 
@@ -107,6 +147,12 @@ public class LocalizationUtils {
         public static final String VALIDATION_INVALID_LINK_ERROR = "error.validation.invalid.link";
         public static final String VALIDATION_EXPIRED_VERIFICATION_LINK_ERROR = "error.validation.expired.verification.link";
         public static final String AUTHORIZATION_ERROR = "error.authorization";
+        public static final String VALIDATION_FILE_EMPTY_FILENAME_ERROR = "error.validation.empty-filename.file";
+        public static final String VALIDATION_FILE_EMPTY_FILE_EXTENSION_ERROR = "error.validation.empty-file-extension.file";
+        public static final String VALIDATION_FILE_ERROR = "error.validation.file";
+        public static final String VALIDATION_FILE_SIZE_ERROR = "error.uploading.size.file";
+        public static final String UPLOADING_FILE_ERROR = "error.uploading.file";
+        public static final String VALIDATION_USER_PROFILE_PICTURE_EXTENSION_ERROR = "error.validation.user-profile-picture";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -115,5 +161,13 @@ public class LocalizationUtils {
         public static final String ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN = "account.verification.subject.pattern";
         public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT = "account.password-recover.subject";
         public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN = "account.password-recover.pattern";
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor(staticName = "of")
+    public static class LocaleWrapper {
+        private String name;
+        private Locale locale;
     }
 }
