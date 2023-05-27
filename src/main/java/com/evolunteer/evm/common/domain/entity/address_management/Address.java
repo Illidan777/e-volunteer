@@ -26,4 +26,6 @@ public class Address {
     private String corpus;
 
     private String office;
+
+    private String postIndex;
 }

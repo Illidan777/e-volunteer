@@ -1,4 +1,4 @@
-package com.evolunteer.evm.ui.components.app.layout.view.login;
+package com.evolunteer.evm.ui.components.app.view.login;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.VerificationLinkService;
@@ -22,7 +22,7 @@ import java.util.*;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR;
 
-@Route(RouteUtils.PASSWORD_RECOVER)
+@Route(RouteUtils.PASSWORD_RECOVER_ROUTE)
 public class PasswordRecoverView extends VerticalLayout implements BeforeEnterObserver {
 
     private static final String ACCOUNT_ID_QUERY_PARAMETER_NAME = "accountId";

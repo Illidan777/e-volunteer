@@ -1,4 +1,4 @@
-package com.evolunteer.evm.ui.components.app.layout.view.login;
+package com.evolunteer.evm.ui.components.app.view.login;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
@@ -20,7 +20,7 @@ import java.util.Map;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR;
 
-@Route(RouteUtils.ACCOUNT_VERIFICATION)
+@Route(RouteUtils.ACCOUNT_VERIFICATION_ROUTE)
 public class AccountVerificationView extends VerticalLayout implements BeforeEnterObserver {
 
     private static final String ACCOUNT_ID_QUERY_PARAMETER_NAME = "accountId";

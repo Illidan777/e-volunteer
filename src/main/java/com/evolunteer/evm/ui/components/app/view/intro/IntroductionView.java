@@ -1,4 +1,4 @@
-package com.evolunteer.evm.ui.components.app.layout.view.intro;
+package com.evolunteer.evm.ui.components.app.view.intro;
 
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.components.app.layout.LanguageLayout;

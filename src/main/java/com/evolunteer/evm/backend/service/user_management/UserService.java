@@ -1,11 +1,11 @@
 package com.evolunteer.evm.backend.service.user_management;
 
-import com.evolunteer.evm.common.domain.dto.file_management.EmbeddableFile;
+import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
+import com.evolunteer.evm.common.domain.dto.fund_management.BaseFundDto;
 import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
 import com.evolunteer.evm.common.domain.request.CreateExternalUserRequest;
 import com.evolunteer.evm.common.domain.request.CreateUserRequest;
 import com.evolunteer.evm.common.domain.request.UpdateUserRequest;
-import org.springframework.transaction.annotation.Transactional;
 
 public interface UserService {
 
@@ -13,9 +13,11 @@ public interface UserService {
 
     UserDto registerExternalUser(CreateExternalUserRequest registrationRequest);
 
-    UserDto getByAccountId(Long accountId);
+    UserDto getContextUser();
 
-    void updateUserPicture(Long userId, EmbeddableFile picture);
+    void updateUserPicture(Long userId, FileMetaDataDto picture);
 
     void updateUser(Long userId, UpdateUserRequest updateUserRequest);
+
+    void setFundToUser(Long userId, BaseFundDto fundDto);
 }

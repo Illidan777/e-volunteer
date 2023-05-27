@@ -4,6 +4,7 @@ import com.evolunteer.evm.common.domain.enums.user_management.AccountRole;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountStatus;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountAuthType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.Set;
 @Entity
 @Data
 @Table(name = "accounts")
+@EqualsAndHashCode(exclude = "user")
 public class Account {
 
     @Id

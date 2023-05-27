@@ -31,21 +31,21 @@ public class Fund {
 
     private String email;
 
+    @OneToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
+
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address address;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
-
-    @ManyToMany(cascade = ALL, fetch = EAGER)
-    @JoinTable(name = "fund_employees",
-            joinColumns = @JoinColumn(name = "fond_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @OneToMany(mappedBy = "fund", cascade = ALL, fetch = EAGER)
     private Set<User> employees = new HashSet<>();
 
-    @ElementCollection
+    @OneToMany(mappedBy = "fund", cascade = ALL, fetch = EAGER)
+    private Set<FundRequisite> requisites = new HashSet<>();
+
+    @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "fund_categories", joinColumns = @JoinColumn(name = "fund_id"))
     private Set<FundActivityCategory> categories = new HashSet<>();
 }

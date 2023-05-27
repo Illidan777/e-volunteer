@@ -19,12 +19,15 @@ public abstract class UserMapper {
 
     public abstract UserDto mapUserToUserDto(User user);
 
+    public abstract User mapUserDtoToUser(UserDto userDto);
+
     public abstract UpdateUserRequest mapUserDtoToUpdateUserRequest(UserDto userDto);
 
     @Mappings(value = {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "accountDetails", ignore = true),
-            @Mapping(target = "picture", ignore = true)
+            @Mapping(target = "picture", ignore = true),
+            @Mapping(target = "fund", ignore = true)
     })
     public abstract User mapUpdateUserRequestToUser(UpdateUserRequest updateUserRequest, @MappingTarget User user);
 }

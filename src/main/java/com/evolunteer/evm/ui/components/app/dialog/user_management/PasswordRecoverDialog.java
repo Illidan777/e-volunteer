@@ -1,4 +1,4 @@
-package com.evolunteer.evm.ui.components.app.dialog;
+package com.evolunteer.evm.ui.components.app.dialog.user_management;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;

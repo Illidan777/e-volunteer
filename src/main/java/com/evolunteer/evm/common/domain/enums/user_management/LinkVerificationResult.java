@@ -7,7 +7,7 @@ import lombok.Getter;
 public enum LinkVerificationResult {
     INCORRECT_VERIFICATION_CREDENTIALS(LocalizationUtils.Error.VALIDATION_INVALID_LINK_ERROR, true),
     EXPIRED_VERIFICATION_CREDENTIALS(LocalizationUtils.Error.VALIDATION_EXPIRED_VERIFICATION_LINK_ERROR, true),
-    SUCCESSFUL_VERIFICATION(LocalizationUtils.UI.RegistrationDialog.SUCCESS_ACCOUNT_VERIFICATION, false);
+    SUCCESSFUL_VERIFICATION(LocalizationUtils.UI.UserRegistrationDialog.SUCCESS_ACCOUNT_VERIFICATION, false);
 
     private final String localizedMessage;
     private final Boolean isError;

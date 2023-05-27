@@ -1,13 +1,10 @@
-package com.evolunteer.evm.ui.components.app.layout.view.cabinet;
+package com.evolunteer.evm.ui.components.app.view.cabinet;
 
-import com.evolunteer.evm.backend.security.utils.SecurityUtils;
 import com.evolunteer.evm.backend.service.file_management.FileService;
 import com.evolunteer.evm.backend.service.file_management.validator.impl.UserProfilePictureValidator;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
-import com.evolunteer.evm.common.domain.dto.file_management.EmbeddableFile;
 import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
-import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
 import com.evolunteer.evm.common.domain.request.UpdateUserRequest;
 import com.evolunteer.evm.common.mapper.user_management.UserMapper;
@@ -15,7 +12,7 @@ import com.evolunteer.evm.common.utils.date.DateUtils;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import com.evolunteer.evm.ui.components.app.div.PasswordRecoverDiv;
-import com.evolunteer.evm.ui.components.app.layout.ParentNavigationLayout;
+import com.evolunteer.evm.ui.components.app.layout.navigation.ParentNavigationLayout;
 import com.evolunteer.evm.ui.components.general.button.DeleteButton;
 import com.evolunteer.evm.ui.components.general.button.SaveButton;
 import com.evolunteer.evm.ui.components.general.header.H3Header;
@@ -48,7 +45,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.UI.UserProfileView.*;
 
-@Route(value = RouteUtils.USER_PROFILE, layout = ParentNavigationLayout.class)
+@Route(value = RouteUtils.USER_PROFILE_ROUTE, layout = ParentNavigationLayout.class)
 public class UserProfileView extends VerticalLayout {
 
     private static final String USER_PROFILE_PICTURE_ALT = "my profile picture";
@@ -58,7 +55,6 @@ public class UserProfileView extends VerticalLayout {
     private final FileService fileService;
     private final UserService userService;
     private final UserProfilePictureValidator userProfilePictureValidator;
-    private final AccountDto contextAccount;
     private final UserDto contextUser;
     private final UpdateUserRequest updateUserRequest;
 
@@ -74,8 +70,7 @@ public class UserProfileView extends VerticalLayout {
         this.fileService = fileService;
         this.userService = userService;
         this.userProfilePictureValidator = userProfilePictureValidator;
-        this.contextAccount = SecurityUtils.getContextAccount();
-        this.contextUser = userService.getByAccountId(contextAccount.getId());
+        this.contextUser = userService.getContextUser();
         this.updateUserRequest = userMapper.mapUserDtoToUpdateUserRequest(contextUser);
 
         add(
@@ -83,7 +78,7 @@ public class UserProfileView extends VerticalLayout {
                 new Hr(),
                 this.createPersonalDataDiv(),
                 new Hr(),
-                new PasswordRecoverDiv(messageSource, locale, accountService, contextAccount.getId(), false)
+                new PasswordRecoverDiv(messageSource, locale, accountService, contextUser.getAccountDetails().getId(), false)
 
         );
         updateUserBinder.readBean(updateUserRequest);
@@ -102,7 +97,7 @@ public class UserProfileView extends VerticalLayout {
         final String userPictureFileCode;
         final boolean isPicturePresent = Objects.nonNull(contextUser.getPicture());
         if (isPicturePresent) {
-            userPictureFileCode = contextUser.getPicture().getFileCode();
+            userPictureFileCode = contextUser.getPicture().getCode();
             if (pictureUploader.isAttached()) {
                 this.remove(pictureUploader);
             }
@@ -226,8 +221,7 @@ public class UserProfileView extends VerticalLayout {
         return event -> {
             final Optional<FileMetaDataDto> optionalFileMetaDataDto = atomicUploadedPicture.get();
             if (Objects.nonNull(optionalFileMetaDataDto) && optionalFileMetaDataDto.isPresent()) {
-                final FileMetaDataDto uploadedFile = optionalFileMetaDataDto.get();
-                userService.updateUserPicture(contextUser.getId(), new EmbeddableFile(uploadedFile.getCode(), uploadedFile.getName()));
+                userService.updateUserPicture(contextUser.getId(), optionalFileMetaDataDto.get());
                 NotificationFactory.success(messageSource.getMessage(PICTURE_SUCCESSFULLY_UPDATED, null, locale)).open();
                 UI.getCurrent().getPage().reload();
             }

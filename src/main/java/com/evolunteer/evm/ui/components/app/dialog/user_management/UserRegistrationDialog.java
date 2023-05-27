@@ -1,4 +1,4 @@
-package com.evolunteer.evm.ui.components.app.dialog;
+package com.evolunteer.evm.ui.components.app.dialog.user_management;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
@@ -35,9 +35,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.Error.VALIDATION_ACCOUNT_ALREADY_EXIST_BY_USERNAME_ERROR;
-import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.UI.RegistrationDialog.SUCCESS_REGISTRATION_TEXT;
+import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.UI.UserRegistrationDialog.SUCCESS_REGISTRATION_TEXT;
 
-public class RegistrationDialog extends Dialog {
+public class UserRegistrationDialog extends Dialog {
 
     private final ConfirmButton confirmButton;
     private final Binder<CreateUserRequest> createUserRequestBinder;
@@ -47,7 +47,7 @@ public class RegistrationDialog extends Dialog {
     private final AccountService accountService;
     private final UserService userService;
 
-    public RegistrationDialog(MessageSource messageSource, Locale locale, UserService userService, AccountService accountService) {
+    public UserRegistrationDialog(MessageSource messageSource, Locale locale, UserService userService, AccountService accountService) {
         this.locale = locale;
         this.messageSource = messageSource;
         this.userService = userService;
@@ -55,15 +55,15 @@ public class RegistrationDialog extends Dialog {
         this.createUserRequest = new CreateUserRequest();
         this.createUserRequestBinder = new Binder<>();
 
-        final String nameFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.NAME_FIELD_TEXT, null, locale);
-        final String surnameFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.SURNAME_FIELD_TEXT, null, locale);
-        final String middleNameFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.MIDDLE_NAME_FIELD_TEXT, null, locale);
+        final String nameFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.NAME_FIELD_TEXT, null, locale);
+        final String surnameFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.SURNAME_FIELD_TEXT, null, locale);
+        final String middleNameFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.MIDDLE_NAME_FIELD_TEXT, null, locale);
 
-        final String phoneFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.PHONE_FIELD_TEXT, null, locale);
-        final String emailFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.EMAIL_FIELD_TEXT, null, locale);
-        final String birthDateFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.BIRTHDATE_FIELD_TEXT, null, locale);
-        final String usernameFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.USERNAME_FIELD_TEXT, null, locale);
-        final String passwordFieldText = messageSource.getMessage(LocalizationUtils.UI.RegistrationDialog.PASSWORD_FIELD_TEXT, null, locale);
+        final String phoneFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.PHONE_FIELD_TEXT, null, locale);
+        final String emailFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.EMAIL_FIELD_TEXT, null, locale);
+        final String birthDateFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.BIRTHDATE_FIELD_TEXT, null, locale);
+        final String usernameFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.USERNAME_FIELD_TEXT, null, locale);
+        final String passwordFieldText = messageSource.getMessage(LocalizationUtils.UI.UserRegistrationDialog.PASSWORD_FIELD_TEXT, null, locale);
 
         final String nameValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_USER_NAME_ERROR, null, locale);
         final String surnameValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_SURNAME_ERROR, null, locale);
@@ -73,8 +73,8 @@ public class RegistrationDialog extends Dialog {
         final String usernameValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_USERNAME_ERROR, null, locale);
         final String passwordValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_PASSWORD_ERROR, null, locale);
 
-        final H3Header registrationFormHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.RegistrationDialog.HEADER_TEXT);
-        final H3Header credentialsHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.RegistrationDialog.CREDENTIALS_HEADER_TEXT);
+        final H3Header registrationFormHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.UserRegistrationDialog.HEADER_TEXT);
+        final H3Header credentialsHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.UserRegistrationDialog.CREDENTIALS_HEADER_TEXT);
 
         final TextField nameField = new TextField(nameFieldText);
         nameField.setRequired(true);

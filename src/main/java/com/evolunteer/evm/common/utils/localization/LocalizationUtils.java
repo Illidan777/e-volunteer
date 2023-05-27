@@ -52,7 +52,7 @@ public class LocalizationUtils {
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
-        public static class RegistrationDialog {
+        public static class UserRegistrationDialog {
             public static final String HEADER_TEXT = "ui.registration.header.text";
             public static final String CREDENTIALS_HEADER_TEXT = "ui.registration.credentials-header.text";
             public static final String NAME_FIELD_TEXT = "ui.registration.name-field.text";
@@ -65,6 +65,46 @@ public class LocalizationUtils {
             public static final String PASSWORD_FIELD_TEXT = "ui.registration.password-field.text";
             public static final String SUCCESS_REGISTRATION_TEXT = "ui.registration.success.text";
             public static final String SUCCESS_ACCOUNT_VERIFICATION = "ui.registration.account.verification.success.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class FundRegistrationDialog {
+            public static final String HEADER_TEXT = "ui.registration.fund.header.text";
+            public static final String MAIN_INFO_HEADER_TEXT = "ui.registration.fund.main-info.header.text";
+            public static final String COMMUNICATIONS_HEADER_TEXT = "ui.registration.fund.communication.header.text";
+            public static final String NAME_FIELD_TEXT = "ui.registration.fund.name-field.text";
+            public static final String PHONE_FIELD_TEXT = UserRegistrationDialog.PHONE_FIELD_TEXT;
+            public static final String EMAIL_FIELD_TEXT = UserRegistrationDialog.EMAIL_FIELD_TEXT;
+            public static final String DESCRIPTION_FIELD_TEXT = "ui.registration.fund.description-field.text";
+            public static final String CATEGORY_FIELD_TEXT = "ui.registration.fund.category-field.text";
+            public static final String CATEGORY_MEDICINE_TEXT = "ui.registration.fund.category-medicine.text";
+            public static final String CATEGORY_PRODUCT_TEXT = "ui.registration.fund.category-product.text";
+            public static final String CATEGORY_MILITARY_STAFF_TEXT = "ui.registration.fund.category-military-staff.text";
+            public static final String CATEGORY_CLOTH_TEXT = "ui.registration.fund.category-cloth.text";
+            public static final String CATEGORY_HYGIENE_TEXT = "ui.registration.fund.category-hygiene.text";
+            public static final String REQUISITES_HEADER_TEXT = "ui.registration.fund.header.requisites.text";
+            public static final String REQUISITE_RECIPIENT_FIELD_TEXT = "ui.registration.fund.requisite.recipient-field.text";
+            public static final String REQUISITE_BANK_FIELD_TEXT = "ui.registration.fund.requisite.bank-field.text";
+            public static final String REQUISITE_BANK_CODE_FIELD_TEXT = "ui.registration.fund.requisite.bank-code-field.text";
+            public static final String REQUISITE_IBAN_FIELD_TEXT = "ui.registration.fund.requisite.iban-field.text";
+            public static final String REQUISITE_PAYMENT_ACCOUNT_FIELD_TEXT = "ui.registration.fund.requisite.payment-account-field.text";
+            public static final String REQUISITE_SWIFT_CODE_FIELD_TEXT = "ui.registration.fund.requisite.swift-code-field.text";
+            public static final String REQUISITE_LEGAL_ADDRESS_FIELD_TEXT = "ui.registration.fund.requisite.legal-address-field.text";
+            public static final String REQUISITE_PAYMENT_LINK_FIELD_TEXT = "ui.registration.fund.requisite.payment-link-field.text";
+            public static final String SUCCESSFULLY_FUND_REGISTRATION = "ui.registration.fund.success.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class Address {
+            public static final String HEADER_TEXT = "ui.address.header.text";
+            public static final String COUNTRY_FIELD_TEXT = "ui.address.country-field.text";
+            public static final String REGION_FIELD_TEXT = "ui.address.region-field.text";
+            public static final String CITY_FIELD_TEXT = "ui.address.city-field.text";
+            public static final String STREET_FIELD_TEXT = "ui.address.street-field.text";
+            public static final String HOUSE_FIELD_TEXT = "ui.address.house-field.text";
+            public static final String CORPUS_FIELD_TEXT = "ui.address.corpus-field.text";
+            public static final String OFFICE_FIELD_TEXT = "ui.address.office-field.text";
+            public static final String POST_INDEX_FIELD_TEXT = "ui.address.post-index-field.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -86,15 +126,23 @@ public class LocalizationUtils {
         public static class UserProfileView {
             public static final String PERSONAL_DATA_HEADER_TEXT = "ui.user-profile.personal-data.header.text";
             public static final String PROFILE_PICTURE_HEADER_TEXT = "ui.user-profile.profile-picture.header.text";
-            public static final String NAME_FIELD_TEXT = RegistrationDialog.NAME_FIELD_TEXT;
-            public static final String SURNAME_FIELD_TEXT = RegistrationDialog.SURNAME_FIELD_TEXT;
-            public static final String MIDDLE_NAME_FIELD_TEXT = RegistrationDialog.MIDDLE_NAME_FIELD_TEXT;
-            public static final String PHONE_FIELD_TEXT = RegistrationDialog.PHONE_FIELD_TEXT;
-            public static final String EMAIL_FIELD_TEXT = RegistrationDialog.EMAIL_FIELD_TEXT;
-            public static final String BIRTHDATE_FIELD_TEXT = RegistrationDialog.BIRTHDATE_FIELD_TEXT;
+            public static final String NAME_FIELD_TEXT = UserRegistrationDialog.NAME_FIELD_TEXT;
+            public static final String SURNAME_FIELD_TEXT = UserRegistrationDialog.SURNAME_FIELD_TEXT;
+            public static final String MIDDLE_NAME_FIELD_TEXT = UserRegistrationDialog.MIDDLE_NAME_FIELD_TEXT;
+            public static final String PHONE_FIELD_TEXT = UserRegistrationDialog.PHONE_FIELD_TEXT;
+            public static final String EMAIL_FIELD_TEXT = UserRegistrationDialog.EMAIL_FIELD_TEXT;
+            public static final String BIRTHDATE_FIELD_TEXT = UserRegistrationDialog.BIRTHDATE_FIELD_TEXT;
             public static final String PERSONAL_DATA_SUCCESSFULLY_UPDATED = "ui.user-profile.personal-data.successfully-updated.text";
             public static final String PICTURE_SUCCESSFULLY_UPDATED = "ui.user-profile.picture.successfully-updated.text";
             public static final String PICTURE_SUCCESSFULLY_DELETED = "ui.user-profile.picture.successfully-deleted.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class FundProfileView {
+            public static final String NO_FUND_DETECTED_HEADER_TEXT = "ui.fund-profile.no-fund-detected.header.text";
+            public static final String CREATE_FUND_BUTTON_TEXT = "ui.fund-profile.create-fund.button.text";
+            public static final String APPLY_FOR_PARTICIPATION_BUTTON_TEXT = "ui.fund-profile.apply-for-participation.button.text";
+            public static final String CHECK_INVITATIONS_BUTTON_TEXT = "ui.fund-profile.check-invitations.button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -122,6 +170,10 @@ public class LocalizationUtils {
         public static class NavigationLayout {
             public static final String HEADER_TEXT = "ui.navigation-layout.header.text";
             public static final String ITEM_MY_PROFILE_TEXT = "ui.navigation-layout.item.my-profile.header.text";
+            public static final String ITEM_HOME_TEXT = "ui.navigation-layout.item.home.header.text";
+            public static final String ITEM_FUND_PROFILE_TEXT = "ui.navigation-layout.item.fund-profile.header.text";
+            public static final String ITEM_TEAM_TEXT = "ui.navigation-layout.item.team.header.text";
+            public static final String ITEM_STOCK_TEXT = "ui.navigation-layout.item.stock.header.text";
             public static final String LOG_OUT_BUTTON_TEXT = "ui.navigation-layout.log-out.button.text";
         }
 
@@ -153,6 +205,19 @@ public class LocalizationUtils {
         public static final String VALIDATION_FILE_SIZE_ERROR = "error.uploading.size.file";
         public static final String UPLOADING_FILE_ERROR = "error.uploading.file";
         public static final String VALIDATION_USER_PROFILE_PICTURE_EXTENSION_ERROR = "error.validation.user-profile-picture";
+        public static final String VALIDATION_COUNTRY_ERROR = "error.validation.required.country";
+        public static final String VALIDATION_REGION_ERROR = "error.validation.required.region";
+        public static final String VALIDATION_CITY_ERROR = "error.validation.required.city";
+        public static final String VALIDATION_STREET_ERROR = "error.validation.required.street";
+        public static final String VALIDATION_HOUSE_ERROR = "error.validation.required.house";
+        public static final String VALIDATION_FUND_NAME_ERROR = "error.validation.required.fund-name";
+        public static final String VALIDATION_FUND_DESCRIPTION_ERROR = "error.validation.required.fund-description";
+        public static final String VALIDATION_FUND_CATEGORIES_ERROR = "error.validation.required.fund-categories";
+        public static final String VALIDATION_REQUISITE_RECIPIENT_ERROR = "error.validation.required.requisite-recipient";
+        public static final String VALIDATION_REQUISITE_BANK_ERROR = "error.validation.required.requisite-bank";
+        public static final String VALIDATION_REQUISITE_BANK_CODE_ERROR = "error.validation.required.requisite-bank-code";
+        public static final String VALIDATION_REQUISITE_PAYMENT_ACCOUNT_ERROR = "error.validation.required.requisite-payment-account";
+        public static final String VALIDATION_REQUISITE_LEGAL_ADDRESS_ERROR = "error.validation.required.requisite-legal-address";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)

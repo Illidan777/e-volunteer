@@ -1,10 +1,10 @@
-package com.evolunteer.evm.ui.components.app.layout.view.login;
+package com.evolunteer.evm.ui.components.app.view.login;
 
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
-import com.evolunteer.evm.ui.components.app.dialog.PasswordRecoverDialog;
-import com.evolunteer.evm.ui.components.app.dialog.RegistrationDialog;
+import com.evolunteer.evm.ui.components.app.dialog.user_management.PasswordRecoverDialog;
+import com.evolunteer.evm.ui.components.app.dialog.user_management.UserRegistrationDialog;
 import com.evolunteer.evm.ui.components.app.layout.LanguageLayout;
 import com.evolunteer.evm.ui.components.general.notification.NotificationFactory;
 import com.evolunteer.evm.ui.utils.RouteUtils;
@@ -74,7 +74,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         login.addForgotPasswordListener(forgotPasswordEvent -> new PasswordRecoverDialog(messageSource, locale, accountService).open());
 
         final H1 logInHeader = new H1(loginHeader);
-        final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new RegistrationDialog(messageSource, locale, userService, accountService).open());
+        final Button registrationButton = new Button(loginRegistration, buttonClickEvent -> new UserRegistrationDialog(messageSource, locale, userService, accountService).open());
         final Button googleButton = new Button(loginWithGoogle, VaadinIcon.GOOGLE_PLUS_SQUARE.create(), buttonClickEvent -> UI.getCurrent().getPage().setLocation("/oauth2/authorization/google"));
 
         add(

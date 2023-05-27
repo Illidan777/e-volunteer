@@ -1,6 +1,7 @@
 package com.evolunteer.evm.common.domain.dto.user_management;
 
-import com.evolunteer.evm.common.domain.dto.file_management.EmbeddableFile;
+import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
+import com.evolunteer.evm.common.domain.dto.fund_management.BaseFundDto;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,6 +15,7 @@ public class UserDto {
     private String phone;
     private String email;
     private Date birthDate;
-    private EmbeddableFile picture;
+    private FileMetaDataDto picture;
     private AccountDto accountDetails;
+    private BaseFundDto fund;
 }
