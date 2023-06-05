@@ -123,6 +123,11 @@ public class LocalizationUtils {
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class HomeView {
+            public static final String HEADER_TEXT = "ui.home-view.header.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
         public static class UserProfileView {
             public static final String PERSONAL_DATA_HEADER_TEXT = "ui.user-profile.personal-data.header.text";
             public static final String PROFILE_PICTURE_HEADER_TEXT = "ui.user-profile.profile-picture.header.text";
