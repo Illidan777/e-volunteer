@@ -3,8 +3,8 @@ package com.evolunteer.evm.backend.service.user_management;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
 import com.evolunteer.evm.common.domain.enums.user_management.LinkVerificationResult;
 import com.evolunteer.evm.common.domain.enums.user_management.VerificationLinkType;
-import com.evolunteer.evm.common.domain.request.CreateAccountRequest;
-import com.evolunteer.evm.common.domain.request.CreateExternalAccountRequest;
+import com.evolunteer.evm.common.domain.request.user_management.CreateAccountRequest;
+import com.evolunteer.evm.common.domain.request.user_management.CreateExternalAccountRequest;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.Optional;

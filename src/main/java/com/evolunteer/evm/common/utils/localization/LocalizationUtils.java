@@ -141,8 +141,34 @@ public class LocalizationUtils {
         public static class FundProfileView {
             public static final String NO_FUND_DETECTED_HEADER_TEXT = "ui.fund-profile.no-fund-detected.header.text";
             public static final String CREATE_FUND_BUTTON_TEXT = "ui.fund-profile.create-fund.button.text";
-            public static final String APPLY_FOR_PARTICIPATION_BUTTON_TEXT = "ui.fund-profile.apply-for-participation.button.text";
-            public static final String CHECK_INVITATIONS_BUTTON_TEXT = "ui.fund-profile.check-invitations.button.text";
+            public static final String APPLY_FOR_PARTICIPATION_HEADER_TEXT = "ui.fund-profile.apply-for-participation.header.text";
+            public static final String APPLY_FOR_PARTICIPATION_DESCRIPTION_HEADER_TEXT = "ui.fund-profile.apply-for-participation.text";
+            public static final String SUCCESSFULLY_FUND_UPDATED = "ui.fund-profile.update.success.text";
+            public static final String HEADER_TEXT = "ui.fund-profile.fund.header.text";
+            public static final String INVITATIONS_HEADER_TEXT = "ui.fund-profile.invitations.header.text";
+            public static final String NO_INVITATIONS_TEXT = "ui.fund-profile.no-invitations.text";
+            public static final String PHONE_FIELD_TEXT = UserRegistrationDialog.PHONE_FIELD_TEXT;
+            public static final String EMAIL_FIELD_TEXT = UserRegistrationDialog.EMAIL_FIELD_TEXT;
+            public static final String DESCRIPTION_FIELD_TEXT = FundRegistrationDialog.DESCRIPTION_FIELD_TEXT;
+            public static final String FUND_SELECT_TEXT = "ui.fund-profile.search-fund.text";
+            public static final String NO_FUND_SELECTED_TO_APPLY_TEXT = "ui.fund-profile.fund-select.no-fund-selected.text";
+            public static final String APPLICATION_SUCCESSFULLY_SENT_TEXT = "ui.fund-profile.application-successfully-sent.text";
+            public static final String APPLICATION_IN_PROGRESS_TEXT = "ui.fund-profile.application-in-progress.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class TeamView {
+            public static final String PHONE_FIELD_TEXT = UserRegistrationDialog.PHONE_FIELD_TEXT;
+            public static final String EMAIL_FIELD_TEXT = UserRegistrationDialog.EMAIL_FIELD_TEXT;
+            public static final String INVITE_MEMBER_HEADER_TEXT = "ui.team.invite-member.header.text";
+            public static final String INVITE_MEMBER_DESCRIPTION_TEXT = "ui.team.invite-member-description.header.text";
+            public static final String APPLICATIONS_HEADER_TEXT = "ui.team.applications.header.text";
+            public static final String USERS_SELECT_TEXT = "ui.team.search-users.header.text";
+            public static final String INVITE_MEMBER_BUTTON_TEXT = "ui.team.invite-member.button.text";
+            public static final String NO_APPLICATIONS_TEXT = "ui.team.no-applications.text";
+            public static final String NO_USER_SELECTED_TO_INVITE_TEXT = "ui.team.users-select.no-user-selected.text";
+            public static final String INVITATION_SUCCESSFULLY_SENT_TEXT = "ui.team.invitation-successfully-sent.text";
+            public static final String INVITATION_IN_PROGRESS_TEXT = "ui.team.invitation-in-progress.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -158,6 +184,10 @@ public class LocalizationUtils {
             public static final String CANCEL_BUTTON_TEXT = "ui.common.cancel-button.text";
             public static final String SAVE_BUTTON_TEXT = "ui.common.save-button.text";
             public static final String DELETE_BUTTON_TEXT = "ui.common.delete-button.text";
+            public static final String ACCEPT_BUTTON_TEXT = "ui.common.accept-button.text";
+            public static final String REJECT_BUTTON_TEXT = "ui.common.reject-button.text";
+            public static final String MORE_INFO_DETAILS_TEXT = "ui.common.more-info.details.text";
+            public static final String SEND_BUTTON_TEXT = "ui.common.send-button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -226,6 +256,10 @@ public class LocalizationUtils {
         public static final String ACCOUNT_VERIFICATION_NOTIFICATION_PATTERN = "account.verification.subject.pattern";
         public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_SUBJECT = "account.password-recover.subject";
         public static final String ACCOUNT_PASSWORD_RECOVER_NOTIFICATION_PATTERN = "account.password-recover.pattern";
+        public static final String USER_FUND_INVITATION_NOTIFICATION_SUBJECT = "user.fund.invitation.subject";
+        public static final String USER_FUND_INVITATION_NOTIFICATION_PATTERN = "user.fund.invitation.pattern";
+        public static final String SUCCESSFULLY_ACCEPTED_MEMBER_OF_FUND_SUBJECT = "user.fund.request-accepted.subject";
+        public static final String SUCCESSFULLY_ACCEPTED_MEMBER_OF_FUND_PATTERN = "user.fund.request-accepted.pattern";
     }
 
     @Data

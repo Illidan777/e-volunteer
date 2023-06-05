@@ -5,8 +5,8 @@ import com.evolunteer.evm.backend.service.file_management.validator.impl.UserPro
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
-import com.evolunteer.evm.common.domain.request.UpdateUserRequest;
+import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
+import com.evolunteer.evm.common.domain.request.user_management.UpdateUserRequest;
 import com.evolunteer.evm.common.mapper.user_management.UserMapper;
 import com.evolunteer.evm.common.utils.date.DateUtils;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
@@ -55,7 +55,7 @@ public class UserProfileView extends VerticalLayout {
     private final FileService fileService;
     private final UserService userService;
     private final UserProfilePictureValidator userProfilePictureValidator;
-    private final UserDto contextUser;
+    private final BaseUserDto contextUser;
     private final UpdateUserRequest updateUserRequest;
 
     public UserProfileView(MessageSource messageSource,

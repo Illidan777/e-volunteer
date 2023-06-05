@@ -1,12 +1,10 @@
 package com.evolunteer.evm.ui.components.app.layout.navigation;
 
-import com.evolunteer.evm.backend.security.utils.SecurityUtils;
 import com.evolunteer.evm.backend.service.file_management.FileService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
 import com.evolunteer.evm.common.domain.dto.general.Pair;
-import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.components.app.view.cabinet.*;
 import com.evolunteer.evm.ui.components.general.header.H1Header;
@@ -20,7 +18,6 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -38,7 +35,7 @@ public class ParentNavigationLayout extends AppLayout {
     private final Locale locale;
     private final MessageSource messageSource;
     private final FileService fileService;
-    private final UserDto contextUser;
+    private final BaseUserDto contextUser;
 
     public ParentNavigationLayout(MessageSource messageSource, FileService fileService, UserService userService) {
         this.locale = LocalizationUtils.getLocale();
@@ -61,14 +58,24 @@ public class ParentNavigationLayout extends AppLayout {
         final Tab stockTab = new Tab(
                 new Icon(VaadinIcon.PACKAGE),
                 new H1Header(messageSource, locale, LocalizationUtils.UI.NavigationLayout.ITEM_STOCK_TEXT));
+        stockTab.setEnabled(false);
 
-        final Tabs tabs = this.createTabs(
-                Pair.of(homeTab, HomeView.class),
-                Pair.of(myProfileTab, UserProfileView.class),
-                Pair.of(fundProfileTab, FundProfileView.class),
-                Pair.of(teamTab, TeamView.class),
-                Pair.of(stockTab, StockView.class)
-        );
+        final Tabs tabs;
+        if (Objects.isNull(contextUser.getFund())) {
+            tabs = this.createTabs(
+                    Pair.of(homeTab, HomeView.class),
+                    Pair.of(myProfileTab, UserProfileView.class),
+                    Pair.of(fundProfileTab, FundProfileView.class)
+            );
+        }else {
+            tabs = this.createTabs(
+                    Pair.of(homeTab, HomeView.class),
+                    Pair.of(myProfileTab, UserProfileView.class),
+                    Pair.of(fundProfileTab, FundProfileView.class),
+                    Pair.of(teamTab, TeamView.class),
+                    Pair.of(stockTab, StockView.class)
+            );
+        }
 
         this.addToDrawer(tabs);
         this.addToNavbar(

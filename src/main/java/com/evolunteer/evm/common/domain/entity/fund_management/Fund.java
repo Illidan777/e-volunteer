@@ -4,6 +4,7 @@ import com.evolunteer.evm.common.domain.entity.address_management.Address;
 import com.evolunteer.evm.common.domain.entity.user_management.User;
 import com.evolunteer.evm.common.domain.enums.fund_management.FundActivityCategory;
 import lombok.Data;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -48,4 +49,8 @@ public class Fund {
     @ElementCollection(fetch = EAGER)
     @CollectionTable(name = "fund_categories", joinColumns = @JoinColumn(name = "fund_id"))
     private Set<FundActivityCategory> categories = new HashSet<>();
+
+    @Where(clause = "fund_request_type = 'USER_REQUEST'")
+    @OneToMany(mappedBy = "fund", cascade = CascadeType.ALL, fetch = EAGER)
+    private Set<FundTeamRequest> requests = new HashSet<>();
 }

@@ -1,4 +1,4 @@
-package com.evolunteer.evm.common.domain.request;
+package com.evolunteer.evm.common.domain.request.user_management;
 
 import com.evolunteer.evm.common.domain.enums.user_management.AccountAuthType;
 import lombok.Builder;

@@ -5,9 +5,9 @@ import com.evolunteer.evm.backend.security.utils.SecurityUtils;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
 import com.evolunteer.evm.common.domain.enums.user_management.AccountAuthType;
-import com.evolunteer.evm.common.domain.request.CreateExternalUserRequest;
+import com.evolunteer.evm.common.domain.request.user_management.CreateExternalUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -70,8 +70,8 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                     .username(email)
                     .authType(AccountAuthType.GOOGLE_AUTH)
                     .build();
-            final UserDto userDto = userService.registerExternalUser(createExternalUserRequest);
-            account = new AuthenticationPrincipal(userDto.getAccountDetails());
+            final BaseUserDto baseUserDto = userService.registerExternalUser(createExternalUserRequest);
+            account = new AuthenticationPrincipal(baseUserDto.getAccountDetails());
         }
         UsernamePasswordAuthenticationToken result = UsernamePasswordAuthenticationToken.authenticated(account, authentication.getCredentials(), user.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(result);

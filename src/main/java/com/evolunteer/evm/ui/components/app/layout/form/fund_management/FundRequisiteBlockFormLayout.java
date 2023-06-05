@@ -1,50 +1,20 @@
 package com.evolunteer.evm.ui.components.app.layout.form.fund_management;
 
 import com.evolunteer.evm.common.domain.dto.fund_management.FundRequisiteDto;
-import com.evolunteer.evm.common.domain.dto.general.Pair;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.ui.components.general.button.DeleteButton;
-import com.evolunteer.evm.ui.components.general.header.H3Header;
-import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 
-import java.util.List;
 import java.util.Locale;
 
-public class FundRequisiteFormLayout extends FormLayout {
+public class FundRequisiteBlockFormLayout extends FormLayout {
 
-    private final MessageSource messageSource;
-    private final Locale locale;
-    private final List<Binder<FundRequisiteDto>> requisiteBinders;
+    public FundRequisiteBlockFormLayout(MessageSource messageSource, Locale locale, Binder<FundRequisiteDto> fundRequisiteBinder) {
 
-    public FundRequisiteFormLayout(MessageSource messageSource, Locale locale, List<Binder<FundRequisiteDto>> requisiteBinders) {
-        this.messageSource = messageSource;
-        this.locale = locale;
-        this.requisiteBinders = requisiteBinders;
-
-        final H3Header requisiteFormHeader = new H3Header(messageSource, locale, LocalizationUtils.UI.FundRegistrationDialog.REQUISITES_HEADER_TEXT);
-        final Button addRequisiteButton = new Button(new Icon(VaadinIcon.PLUS));
-
-        this.add(
-                requisiteFormHeader,
-                addRequisiteButton
-        );
-        this.setResponsiveSteps(new FormLayout.ResponsiveStep("200px", 1));
-
-        addRequisiteButton.addClickListener(event -> {
-            final Pair<FormLayout, Binder<FundRequisiteDto>> requisiteBlock = this.requisiteBlock();
-            this.add(requisiteBlock.getKey());
-            requisiteBinders.add(requisiteBlock.getValue());
-        });
-    }
-
-    private Pair<FormLayout, Binder<FundRequisiteDto>> requisiteBlock() {
         final String recipientFieldText = messageSource.getMessage(LocalizationUtils.UI.FundRegistrationDialog.REQUISITE_RECIPIENT_FIELD_TEXT, null, locale);
         final String bankFieldText = messageSource.getMessage(LocalizationUtils.UI.FundRegistrationDialog.REQUISITE_BANK_FIELD_TEXT, null, locale);
         final String bankCodeFieldText = messageSource.getMessage(LocalizationUtils.UI.FundRegistrationDialog.REQUISITE_BANK_CODE_FIELD_TEXT, null, locale);
@@ -59,8 +29,6 @@ public class FundRequisiteFormLayout extends FormLayout {
         final String bankCodeValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_REQUISITE_BANK_CODE_ERROR, null, locale);
         final String paymentAccountValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_REQUISITE_PAYMENT_ACCOUNT_ERROR, null, locale);
         final String legalAddressValidationText = messageSource.getMessage(LocalizationUtils.Error.VALIDATION_REQUISITE_LEGAL_ADDRESS_ERROR, null, locale);
-
-        final Binder<FundRequisiteDto> fundRequisiteBinder = new Binder<>();
 
         final TextField recipientField = new TextField(recipientFieldText);
         recipientField.setRequired(true);
@@ -109,15 +77,8 @@ public class FundRequisiteFormLayout extends FormLayout {
         fundRequisiteBinder.forField(paymentLinkField)
                 .bind(FundRequisiteDto::getPaymentLink, FundRequisiteDto::setPaymentLink);
 
-        final FormLayout requisiteBlock = new FormLayout();
-        final DeleteButton removeRequisiteBlockButton = new DeleteButton(messageSource, locale, event -> {
-            if(requisiteBlock.isAttached()) {
-                this.remove(requisiteBlock);
-                this.requisiteBinders.remove(fundRequisiteBinder);
-            }
-        });
-        requisiteBlock.setResponsiveSteps(new FormLayout.ResponsiveStep("200px", 1));
-        requisiteBlock.add(
+        this.setResponsiveSteps(new FormLayout.ResponsiveStep("200px", 1));
+        this.add(
                 recipientField,
                 legalAddressField,
                 bankField,
@@ -125,9 +86,7 @@ public class FundRequisiteFormLayout extends FormLayout {
                 paymentAccountField,
                 ibanField,
                 swiftCodeField,
-                paymentLinkField,
-                removeRequisiteBlockButton
+                paymentLinkField
         );
-        return Pair.of(requisiteBlock, fundRequisiteBinder);
     }
 }

@@ -3,7 +3,7 @@ package com.evolunteer.evm.ui.components.app.dialog.user_management;
 import com.evolunteer.evm.backend.service.user_management.AccountService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.request.CreateUserRequest;
+import com.evolunteer.evm.common.domain.request.user_management.CreateUserRequest;
 import com.evolunteer.evm.common.utils.date.DateUtils;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;

@@ -25,5 +25,5 @@ public class BaseFundDto {
     private AddressDto address;
     @NotEmpty(message = "Categories must be specified!")
     private Set<FundActivityCategory> categories = new HashSet<>();
-    private Set<FundRequisiteDto> requisites = new HashSet<>();
+
 }

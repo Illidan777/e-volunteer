@@ -8,12 +8,13 @@ import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
 import com.evolunteer.evm.common.domain.dto.fund_management.BaseFundDto;
 import com.evolunteer.evm.common.domain.dto.user_management.AccountDto;
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.UserDtoFull;
 import com.evolunteer.evm.common.domain.entity.file_management.FileMetaData;
 import com.evolunteer.evm.common.domain.entity.user_management.User;
 import com.evolunteer.evm.common.domain.exception.common.ResourceNotFoundException;
 import com.evolunteer.evm.common.domain.exception.validation.ValidationException;
-import com.evolunteer.evm.common.domain.request.*;
+import com.evolunteer.evm.common.domain.request.user_management.*;
 import com.evolunteer.evm.common.mapper.file_management.FileMetaDataMapper;
 import com.evolunteer.evm.common.mapper.fund_management.FundMapper;
 import com.evolunteer.evm.common.mapper.user_management.AccountMapper;
@@ -24,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto registerInternalUser(final CreateUserRequest registrationRequest) {
+    public BaseUserDto registerInternalUser(final CreateUserRequest registrationRequest) {
         if (Objects.isNull(registrationRequest)) {
             throw new ValidationException("Unable to create user. Registration request is null!");
         }
@@ -55,7 +58,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto registerExternalUser(final CreateExternalUserRequest registrationRequest) {
+    public BaseUserDto registerExternalUser(final CreateExternalUserRequest registrationRequest) {
         if (Objects.isNull(registrationRequest)) {
             throw new ValidationException("Unable to create external user. Registration request is null!");
         }
@@ -68,7 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getContextUser() {
+    public BaseUserDto getContextUser() {
         final AccountDto contextAccount = SecurityUtils.getContextAccount();
         return userMapper.mapUserToUserDto(this.getUserByAccountId(contextAccount.getId()));
     }
@@ -104,6 +107,19 @@ public class UserServiceImpl implements UserService {
         final User user = this.getUserById(userId);
         user.setFund(fundMapper.mapBaseFundDtoToFund(fundDto));
         userRepository.save(user);
+    }
+
+    @Override
+    public Set<BaseUserDto> getAllUsers() {
+        return userRepository.findAll().stream()
+                .filter(user -> user.getAccountDetails().getStatus().isVerified())
+                .map(userMapper::mapUserToUserDto)
+                .collect(Collectors.toSet());
+    }
+
+    @Override
+    public UserDtoFull getById(final Long userId) {
+        return userMapper.mapUserToUserDtoFull(this.getUserById(userId));
     }
 
     private User getUserById(final Long userId) {

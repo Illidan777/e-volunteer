@@ -1,14 +1,12 @@
 package com.evolunteer.evm.common.mapper.user_management;
 
-import com.evolunteer.evm.common.domain.dto.user_management.UserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
+import com.evolunteer.evm.common.domain.dto.user_management.UserDtoFull;
 import com.evolunteer.evm.common.domain.entity.user_management.User;
-import com.evolunteer.evm.common.domain.request.CreateExternalUserRequest;
-import com.evolunteer.evm.common.domain.request.CreateUserRequest;
-import com.evolunteer.evm.common.domain.request.UpdateUserRequest;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.Mappings;
+import com.evolunteer.evm.common.domain.request.user_management.CreateExternalUserRequest;
+import com.evolunteer.evm.common.domain.request.user_management.CreateUserRequest;
+import com.evolunteer.evm.common.domain.request.user_management.UpdateUserRequest;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public abstract class UserMapper {
@@ -17,11 +15,12 @@ public abstract class UserMapper {
 
     public abstract User mapRegistrationRequestToUser(CreateExternalUserRequest createUserRequest);
 
-    public abstract UserDto mapUserToUserDto(User user);
+    @Named("mapUserToUserDto")
+    public abstract BaseUserDto mapUserToUserDto(User user);
 
-    public abstract User mapUserDtoToUser(UserDto userDto);
+    public abstract User mapUserDtoToUser(BaseUserDto baseUserDto);
 
-    public abstract UpdateUserRequest mapUserDtoToUpdateUserRequest(UserDto userDto);
+    public abstract UpdateUserRequest mapUserDtoToUpdateUserRequest(BaseUserDto baseUserDto);
 
     @Mappings(value = {
             @Mapping(target = "id", ignore = true),
@@ -30,4 +29,7 @@ public abstract class UserMapper {
             @Mapping(target = "fund", ignore = true)
     })
     public abstract User mapUpdateUserRequestToUser(UpdateUserRequest updateUserRequest, @MappingTarget User user);
+
+    @Named("mapUserToUserDtoFull")
+    public abstract UserDtoFull mapUserToUserDtoFull(User user);
 }
