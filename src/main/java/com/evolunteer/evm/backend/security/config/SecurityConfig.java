@@ -70,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE).permitAll()
+                .loginPage(SecurityUtils.Route.INTRODUCTION_ROUTE).permitAll()
                 .successHandler(this.loginPageSuccessHandler())
                 .loginProcessingUrl(SecurityUtils.Route.ACCOUNT_LOGIN_ROUTE)
                 .failureUrl(SecurityUtils.Route.ACCOUNT_LOGIN_FAILURE_ROUTE)

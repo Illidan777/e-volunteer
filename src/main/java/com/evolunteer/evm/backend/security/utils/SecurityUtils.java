@@ -54,6 +54,7 @@ public class SecurityUtils {
         public static final String ACCOUNT_VERIFICATION_ROUTE = "/verification/**";
         public static final String PASSWORD_RECOVER_ROUTE = "/password-recover/**";
         public static final String HOME_REDIRECT_ROUTE = "/home";
+        public static final String VISITOR_ROUTE = "/visitor";
 
         public static String[] allowedRoutes() {
             return listOfAllowedRoutes().toArray(new String[0]);
@@ -64,7 +65,8 @@ public class SecurityUtils {
                     ACCOUNT_LOGIN_ROUTE,
                     INTRODUCTION_ROUTE,
                     ACCOUNT_VERIFICATION_ROUTE,
-                    PASSWORD_RECOVER_ROUTE
+                    PASSWORD_RECOVER_ROUTE,
+                    VISITOR_ROUTE
                     );
         }
     }

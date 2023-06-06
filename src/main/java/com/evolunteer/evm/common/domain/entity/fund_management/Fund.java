@@ -53,4 +53,7 @@ public class Fund {
     @Where(clause = "fund_request_type = 'USER_REQUEST'")
     @OneToMany(mappedBy = "fund", cascade = CascadeType.ALL, fetch = EAGER)
     private Set<FundTeamRequest> requests = new HashSet<>();
+
+    @OneToMany(mappedBy = "fund", cascade = CascadeType.ALL, fetch = EAGER)
+    private Set<FundHelpRequest> helpRequests = new HashSet<>();
 }

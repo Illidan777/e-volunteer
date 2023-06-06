@@ -26,7 +26,8 @@ public abstract class UserMapper {
             @Mapping(target = "id", ignore = true),
             @Mapping(target = "accountDetails", ignore = true),
             @Mapping(target = "picture", ignore = true),
-            @Mapping(target = "fund", ignore = true)
+            @Mapping(target = "fund", ignore = true),
+            @Mapping(target = "invitations", ignore = true)
     })
     public abstract User mapUpdateUserRequestToUser(UpdateUserRequest updateUserRequest, @MappingTarget User user);
 

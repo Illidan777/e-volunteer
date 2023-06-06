@@ -10,6 +10,7 @@ import com.evolunteer.evm.common.domain.dto.fund_management.FundTeamRequestDto;
 import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
 import com.evolunteer.evm.common.domain.enums.fund_management.FundRequestType;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
+import com.evolunteer.evm.common.utils.string.StringSymbolUtils;
 import com.evolunteer.evm.ui.components.app.layout.navigation.ParentNavigationLayout;
 import com.evolunteer.evm.ui.components.general.button.AcceptButton;
 import com.evolunteer.evm.ui.components.general.button.DeleteButton;
@@ -233,8 +234,11 @@ public class TeamView extends VerticalLayout {
         userAvatar.addThemeVariants(AvatarVariant.LUMO_XLARGE);
 
         final Details memberDetails = new Details(moreInfoDetails);
-        final Span phoneSpan = new Span(phoneInfoText + SPACE + baseUserDto.getPhone());
-        final Span emailSpan = new Span(emailInfoText + SPACE + baseUserDto.getEmail());
+        final String phone = Objects.isNull(baseUserDto.getPhone()) ? StringSymbolUtils.HYPHEN : baseUserDto.getPhone();
+        final String email = Objects.isNull(baseUserDto.getEmail()) ? StringSymbolUtils.HYPHEN : baseUserDto.getEmail();
+
+        final Span phoneSpan = new Span(phoneInfoText + SPACE + phone);
+        final Span emailSpan = new Span(emailInfoText + SPACE + email);
         final VerticalLayout detailsContent = new VerticalLayout(phoneSpan, emailSpan);
         detailsContent.setSpacing(false);
         detailsContent.setPadding(false);

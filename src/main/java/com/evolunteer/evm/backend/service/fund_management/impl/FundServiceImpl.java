@@ -1,24 +1,19 @@
 package com.evolunteer.evm.backend.service.fund_management.impl;
 
-import com.evolunteer.evm.backend.repository.fund_management.FundRepository;
-import com.evolunteer.evm.backend.repository.fund_management.FundRequisiteRepository;
-import com.evolunteer.evm.backend.repository.fund_management.FundTeamRequestRepository;
+import com.evolunteer.evm.backend.repository.fund_management.*;
 import com.evolunteer.evm.backend.service.address_management.AddressService;
 import com.evolunteer.evm.backend.service.fund_management.FundService;
 import com.evolunteer.evm.backend.service.notification_management.sender.NotificationService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
-import com.evolunteer.evm.common.domain.dto.fund_management.BaseFundDto;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundDtoFull;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundRequisiteDto;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundTeamRequestDto;
+import com.evolunteer.evm.common.domain.dto.fund_management.*;
 import com.evolunteer.evm.common.domain.dto.notification_management.NotificationRequest;
 import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
 import com.evolunteer.evm.common.domain.dto.user_management.UserDtoFull;
 import com.evolunteer.evm.common.domain.entity.address_management.Address;
-import com.evolunteer.evm.common.domain.entity.fund_management.Fund;
-import com.evolunteer.evm.common.domain.entity.fund_management.FundRequisite;
-import com.evolunteer.evm.common.domain.entity.fund_management.FundTeamRequest;
+import com.evolunteer.evm.common.domain.entity.fund_management.*;
 import com.evolunteer.evm.common.domain.entity.user_management.User;
+import com.evolunteer.evm.common.domain.enums.fund_management.FundActivityCategory;
+import com.evolunteer.evm.common.domain.enums.fund_management.FundHelpRequestStatus;
 import com.evolunteer.evm.common.domain.enums.fund_management.FundRequestStatus;
 import com.evolunteer.evm.common.domain.enums.fund_management.FundRequestType;
 import com.evolunteer.evm.common.domain.enums.notification_management.NotificationProviderType;
@@ -31,14 +26,17 @@ import com.evolunteer.evm.common.mapper.user_management.UserMapper;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
 import com.evolunteer.evm.common.utils.validation.ValidationUtils;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.EmailNotification.*;
 import static java.lang.String.format;
@@ -50,6 +48,8 @@ public class FundServiceImpl implements FundService {
     private final FundRepository fundRepository;
     private final FundRequisiteRepository fundRequisiteRepository;
     private final FundTeamRequestRepository fundTeamRequestRepository;
+    private final FundHelpRequestRepository fundHelpRequestRepository;
+    private final FundHelpRequestExecutorRepository requestExecutorRepository;
     private final FundMapper fundMapper;
     private final AddressMapper addressMapper;
     private final UserMapper userMapper;
@@ -188,12 +188,73 @@ public class FundServiceImpl implements FundService {
                 .map(fundMapper::mapFundTeamRequestToFundTeamRequestDto);
     }
 
+    @Override
+    public Set<FundDtoFull> findFundByNameAndCategories(final String name, final Set<FundActivityCategory> categories) {
+        Stream<Fund> fundStream = fundRepository.findAll().stream();
+        if(!StringUtils.isBlank(name)) {
+            final String normalizedFundNameArg = StringUtils.normalizeSpace(name);
+            fundStream = fundStream.filter(fund -> StringUtils.containsIgnoreCase(fund.getName(), normalizedFundNameArg));
+        }
+        if(Objects.nonNull(categories) && !categories.isEmpty()) {
+            fundStream = fundStream.filter(fund -> fund.getCategories().stream().anyMatch(categories::contains));
+        }
+        return fundStream.map(fundMapper::mapFundToFundDtoFull).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void createFundHelpRequest(final Long fundId, final FundHelpRequestDto fundHelpRequestDto) {
+        final Fund fund = this.findFundById(fundId);
+
+        final FundHelpRequestStatus status = FundHelpRequestStatus.NEW;
+
+        final HelpRequestExecutor savedExecutor = requestExecutorRepository.save(fundMapper.mapHelpExecutorDtoToHelpExecutor(fundHelpRequestDto.getExecutor()));
+        final FundHelpRequest helpRequest = fundMapper.mapFundHelpRequestDtoToFundHelpRequest(fundHelpRequestDto);
+        helpRequest.setExecutor(savedExecutor);
+        helpRequest.setStatus(status);
+        helpRequest.setFund(fund);
+        fundHelpRequestRepository.save(helpRequest);
+
+        final NotificationRequest notificationRequest = NotificationRequest.of(
+                messageSource.getMessage(status.getLocalizedMessage(), new String[]{fundHelpRequestDto.getNumber()}, LocalizationUtils.getLocale()),
+                messageSource.getMessage(NEW_FUND_HELP_REQUEST_SUBJECT, null, LocalizationUtils.getLocale()),
+                NotificationProviderType.EMAIL,
+                Set.of(savedExecutor.getEmail())
+        );
+        notificationService.send(notificationRequest);
+    }
+
+    @Override
+    public Optional<FundHelpRequestDto> getFundHelpRequestByNumber(final String number) {
+        return fundHelpRequestRepository.findByNumber(number).map(fundMapper::mapFundHelpRequestToFundHelpRequestDto);
+    }
+
+    @Transactional
+    @Override
+    public void updateFundHelpRequestStatus(final Long requestId, final FundHelpRequestStatus status) {
+        final FundHelpRequest request = this.findFundHelpRequestById(requestId);
+        request.setStatus(status);
+        fundHelpRequestRepository.save(request);
+
+        final NotificationRequest notificationRequest = NotificationRequest.of(
+                messageSource.getMessage(status.getLocalizedMessage(), new String[]{request.getNumber()}, LocalizationUtils.getLocale()),
+                messageSource.getMessage(CHANGE_FUND_HELP_REQUEST_STATUS_SUBJECT, null, LocalizationUtils.getLocale()),
+                NotificationProviderType.EMAIL,
+                Set.of(request.getExecutor().getEmail())
+        );
+        notificationService.send(notificationRequest);
+    }
+
     private FundRequisiteDto saveRequisite(final Fund savedFund, final FundRequisiteDto fundRequisiteDto) {
         final FundRequisite mappedRequisite = fundMapper.mapFundRequisiteDtoToFundRequisite(fundRequisiteDto);
         mappedRequisite.setFund(savedFund);
         return fundMapper.mapFundRequisiteToFundRequisiteDto(fundRequisiteRepository.save(mappedRequisite));
     }
 
+    private FundHelpRequest findFundHelpRequestById(final Long requestId) {
+        Assert.notNull(requestId, "Unable to get fund help request by id. Id is null!");
+        return fundHelpRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ResourceNotFoundException(format("Fund help request by %s id does not exist", requestId)));
+    }
 
     private FundTeamRequest findFundTeamRequestById(final Long requestId) {
         Assert.notNull(requestId, "Unable to get fund team request by id. Id is null!");
@@ -205,11 +266,5 @@ public class FundServiceImpl implements FundService {
         Assert.notNull(fundId, "Unable to get fund by id. Id is null!");
         return fundRepository.findById(fundId)
                 .orElseThrow(() -> new ResourceNotFoundException(format("Fund by %s id does not exist", fundId)));
-    }
-
-    private FundRequisite findFundRequisiteById(final Long fundRequisiteId) {
-        Assert.notNull(fundRequisiteId, "Unable to get fund by id. Id is null!");
-        return fundRequisiteRepository.findById(fundRequisiteId)
-                .orElseThrow(() -> new ResourceNotFoundException(format("Fund requisite by %s id does not exist", fundRequisiteId)));
     }
 }

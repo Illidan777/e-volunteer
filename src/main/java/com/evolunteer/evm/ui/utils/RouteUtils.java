@@ -15,4 +15,6 @@ public class RouteUtils {
     public static final String FUND_PROFILE_ROUTE = "fund-profile";
     public static final String TEAM_ROUTE = "team";
     public static final String STOCK_ROUTE = "stock";
+    public static final String VISITOR_ROUTE = "visitor";
+    public static final String APPLICATIONS_ROUTE = "applications";
 }

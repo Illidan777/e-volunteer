@@ -159,6 +159,16 @@ public class LocalizationUtils {
             public static final String NO_FUND_SELECTED_TO_APPLY_TEXT = "ui.fund-profile.fund-select.no-fund-selected.text";
             public static final String APPLICATION_SUCCESSFULLY_SENT_TEXT = "ui.fund-profile.application-successfully-sent.text";
             public static final String APPLICATION_IN_PROGRESS_TEXT = "ui.fund-profile.application-in-progress.text";
+            public static final String FUND_HELP_REQUEST_STATUS_NEW = "ui.fund.status-new.text";
+            public static final String FUND_HELP_REQUEST_STATUS_ACCEPTED = "ui.fund.status-accepted.text";
+            public static final String FUND_HELP_REQUEST_STATUS_REJECTED = "ui.fund.status-rejected.text";
+            public static final String FUND_HELP_REQUEST_STATUS_IN_PROGRESS = "ui.fund.status-in-progress.text";
+            public static final String FUND_HELP_REQUEST_STATUS_COMPLETED = "ui.fund.status-completed.text";
+            public static final String FUND_HELP_REQUEST_NOTIFICATION_STATUS_NEW = "ui.fund.status-new.notification.text";
+            public static final String FUND_HELP_REQUEST_NOTIFICATION_STATUS_ACCEPTED = "ui.fund.status-accepted.notification.text";
+            public static final String FUND_HELP_REQUEST_NOTIFICATION_STATUS_REJECTED = "ui.fund.status-rejected.notification.text";
+            public static final String FUND_HELP_REQUEST_NOTIFICATION_STATUS_IN_PROGRESS = "ui.fund.status-in-progress.notification.text";
+            public static final String FUND_HELP_REQUEST_NOTIFICATION_STATUS_COMPLETED = "ui.fund.status-completed.notification.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -174,6 +184,31 @@ public class LocalizationUtils {
             public static final String NO_USER_SELECTED_TO_INVITE_TEXT = "ui.team.users-select.no-user-selected.text";
             public static final String INVITATION_SUCCESSFULLY_SENT_TEXT = "ui.team.invitation-successfully-sent.text";
             public static final String INVITATION_IN_PROGRESS_TEXT = "ui.team.invitation-in-progress.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class VisitorView {
+            public static final String CHECK_REQUEST_BUTTON_TEXT = "ui.visitor-view.check-request-status.button.text";
+            public static final String NO_FUND_SEARCH_RESULT = "ui.visitor-view.no-fund-search-result.button.text";
+            public static final String FUND_REQUISITES_DETAILS_TEXT = "ui.visitor-view.fund-requisites.details.text";
+            public static final String APPLY_FOR_FUND_BUTTON_TEXT = "ui.visitor-view.apply-for-fund.button.text";
+            public static final String DESCRIPTION_FILED_TEXT = "ui.visitor-view.description.field.text";
+            public static final String ORGANIZATION_NAME_FILED_TEXT = "ui.visitor-view.organization.field.text";
+            public static final String CONTACT_INFO_HEADER = "ui.visitor-view.contact-info.header.text";
+            public static final String DETAILS_HEADER_TEXT = "ui.visitor-view.details.header.text";
+            public static final String HELP_REQUEST_SUCCESSFULLY_SEND_TEXT = "ui.visitor-view.help-request-successfully-sent.text";
+            public static final String REQUEST_NUMBER_FIELD_TEXT = "ui.visitor-view.help-request.number.field.text";
+            public static final String HEADER_TEXT = "ui.visitor.header.text";
+        }
+
+        @NoArgsConstructor(access = AccessLevel.PRIVATE)
+        public static class ApplicationsView {
+            public static final String GRID_REQUEST_NUMBER_HEADER_TEXT = "ui.applications-view.grid.request-number.header.text";
+            public static final String GRID_REQUEST_STATUS_HEADER_TEXT = "ui.applications-view.grid.request-status.header.text";
+            public static final String GRID_REQUEST_CREATE_AT_HEADER_TEXT = "ui.applications-view.grid.request-created-at.header.text";
+            public static final String GRID_REQUEST_DETAILS_HEADER_TEXT = "ui.applications-view.grid.request-details.header.text";
+            public static final String GRID_REQUEST_EXECUTOR_HEADER_TEXT = "ui.applications-view.grid.request-executor.header.text";
+            public static final String EDIT_STATUS_BUTTON_TEXT = "ui.applications-view.edit-status.button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -193,6 +228,7 @@ public class LocalizationUtils {
             public static final String REJECT_BUTTON_TEXT = "ui.common.reject-button.text";
             public static final String MORE_INFO_DETAILS_TEXT = "ui.common.more-info.details.text";
             public static final String SEND_BUTTON_TEXT = "ui.common.send-button.text";
+            public static final String SEARCH_BUTTON_TEXT = "ui.common.search-button.text";
         }
 
         @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -209,6 +245,7 @@ public class LocalizationUtils {
             public static final String ITEM_FUND_PROFILE_TEXT = "ui.navigation-layout.item.fund-profile.header.text";
             public static final String ITEM_TEAM_TEXT = "ui.navigation-layout.item.team.header.text";
             public static final String ITEM_STOCK_TEXT = "ui.navigation-layout.item.stock.header.text";
+            public static final String ITEM_APPLICATIONS_TEXT = "ui.navigation-layout.item.applications.header.text";
             public static final String LOG_OUT_BUTTON_TEXT = "ui.navigation-layout.log-out.button.text";
         }
 
@@ -253,6 +290,9 @@ public class LocalizationUtils {
         public static final String VALIDATION_REQUISITE_BANK_CODE_ERROR = "error.validation.required.requisite-bank-code";
         public static final String VALIDATION_REQUISITE_PAYMENT_ACCOUNT_ERROR = "error.validation.required.requisite-payment-account";
         public static final String VALIDATION_REQUISITE_LEGAL_ADDRESS_ERROR = "error.validation.required.requisite-legal-address";
+        public static final String VALIDATION_HELP_REQUEST_DESCRIPTION_ERROR = "error.validation.required.help-request-description";
+        public static final String VALIDATION_HELP_REQUEST_NUMBER_ERROR = "error.validation.required.help-request-number";
+        public static final String NOT_FOUND_HELP_REQUEST_NUMBER_ERROR = "error.validation.not-found.help-request";
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -265,6 +305,8 @@ public class LocalizationUtils {
         public static final String USER_FUND_INVITATION_NOTIFICATION_PATTERN = "user.fund.invitation.pattern";
         public static final String SUCCESSFULLY_ACCEPTED_MEMBER_OF_FUND_SUBJECT = "user.fund.request-accepted.subject";
         public static final String SUCCESSFULLY_ACCEPTED_MEMBER_OF_FUND_PATTERN = "user.fund.request-accepted.pattern";
+        public static final String NEW_FUND_HELP_REQUEST_SUBJECT = "fund.help-request.created.subject";
+        public static final String CHANGE_FUND_HELP_REQUEST_STATUS_SUBJECT = "fund.help-request.change-status.subject";
     }
 
     @Data

@@ -16,4 +16,5 @@ public class FundDtoFull extends BaseFundDto {
     private Set<BaseUserDto> employees = new HashSet<>();
     private Set<FundRequisiteDto> requisites = new HashSet<>();
     private Set<FundTeamRequestDto> requests = new HashSet<>();
+    private Set<FundHelpRequestDto> helpRequests = new HashSet<>();
 }

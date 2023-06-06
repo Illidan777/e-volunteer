@@ -5,6 +5,7 @@ import com.evolunteer.evm.ui.components.app.view.login.AccountVerificationView;
 import com.evolunteer.evm.ui.components.app.view.intro.IntroductionView;
 import com.evolunteer.evm.ui.components.app.view.login.LoginView;
 import com.evolunteer.evm.ui.components.app.view.login.PasswordRecoverView;
+import com.evolunteer.evm.ui.components.app.view.visitor.VisitorView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.server.ServiceInitEvent;
@@ -20,7 +21,8 @@ public class ConfiguredUIServiceInitListener implements VaadinServiceInitListene
             LoginView.class,
             AccountVerificationView.class,
             IntroductionView.class,
-            PasswordRecoverView.class);
+            PasswordRecoverView.class,
+            VisitorView.class);
 
     @Override
     public void serviceInit(ServiceInitEvent event) {

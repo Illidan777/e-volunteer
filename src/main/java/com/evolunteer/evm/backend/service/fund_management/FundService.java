@@ -1,9 +1,8 @@
 package com.evolunteer.evm.backend.service.fund_management;
 
-import com.evolunteer.evm.common.domain.dto.fund_management.BaseFundDto;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundDtoFull;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundRequisiteDto;
-import com.evolunteer.evm.common.domain.dto.fund_management.FundTeamRequestDto;
+import com.evolunteer.evm.common.domain.dto.fund_management.*;
+import com.evolunteer.evm.common.domain.enums.fund_management.FundActivityCategory;
+import com.evolunteer.evm.common.domain.enums.fund_management.FundHelpRequestStatus;
 import com.evolunteer.evm.common.domain.enums.fund_management.FundRequestType;
 import com.evolunteer.evm.common.domain.request.fund_management.CreateFundRequest;
 import com.evolunteer.evm.common.domain.request.fund_management.UpdateFundRequest;
@@ -32,4 +31,12 @@ public interface FundService {
     Set<BaseFundDto> getAllFunds();
 
     Optional<FundTeamRequestDto> getFundTeamRequest(Long userId, Long fundId, FundRequestType type);
+
+    Set<FundDtoFull> findFundByNameAndCategories(String name, Set<FundActivityCategory> categories);
+
+    void createFundHelpRequest(Long fundId, FundHelpRequestDto fundHelpRequestDto);
+
+    Optional<FundHelpRequestDto> getFundHelpRequestByNumber(String number);
+
+    void updateFundHelpRequestStatus(Long requestId, FundHelpRequestStatus status);
 }

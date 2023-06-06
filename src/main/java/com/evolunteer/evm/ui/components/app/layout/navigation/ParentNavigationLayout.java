@@ -1,11 +1,15 @@
 package com.evolunteer.evm.ui.components.app.layout.navigation;
 
 import com.evolunteer.evm.backend.service.file_management.FileService;
+import com.evolunteer.evm.backend.service.fund_management.FundService;
 import com.evolunteer.evm.backend.service.user_management.UserService;
 import com.evolunteer.evm.common.domain.dto.file_management.FileMetaDataDto;
+import com.evolunteer.evm.common.domain.dto.fund_management.FundDtoFull;
 import com.evolunteer.evm.common.domain.dto.general.Pair;
 import com.evolunteer.evm.common.domain.dto.user_management.BaseUserDto;
+import com.evolunteer.evm.common.domain.enums.fund_management.FundHelpRequestStatus;
 import com.evolunteer.evm.common.utils.localization.LocalizationUtils;
+import com.evolunteer.evm.common.utils.string.StringSymbolUtils;
 import com.evolunteer.evm.ui.components.app.view.cabinet.*;
 import com.evolunteer.evm.ui.components.general.header.H1Header;
 import com.evolunteer.evm.ui.components.general.header.H3Header;
@@ -18,6 +22,7 @@ import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -27,6 +32,7 @@ import com.vaadin.flow.component.tabs.Tabs;
 import org.springframework.context.MessageSource;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.evolunteer.evm.common.utils.localization.LocalizationUtils.UI.NavigationLayout.LOG_OUT_BUTTON_TEXT;
 
@@ -37,7 +43,7 @@ public class ParentNavigationLayout extends AppLayout {
     private final FileService fileService;
     private final BaseUserDto contextUser;
 
-    public ParentNavigationLayout(MessageSource messageSource, FileService fileService, UserService userService) {
+    public ParentNavigationLayout(MessageSource messageSource, FileService fileService, UserService userService, FundService fundService) {
         this.locale = LocalizationUtils.getLocale();
         this.messageSource = messageSource;
         this.fileService = fileService;
@@ -59,6 +65,10 @@ public class ParentNavigationLayout extends AppLayout {
                 new Icon(VaadinIcon.PACKAGE),
                 new H1Header(messageSource, locale, LocalizationUtils.UI.NavigationLayout.ITEM_STOCK_TEXT));
         stockTab.setEnabled(false);
+        final Tab applicationsTab = new Tab(
+                new Icon(VaadinIcon.ENVELOPES_O),
+                new H1Header(messageSource, locale, LocalizationUtils.UI.NavigationLayout.ITEM_APPLICATIONS_TEXT));
+        stockTab.setEnabled(false);
 
         final Tabs tabs;
         if (Objects.isNull(contextUser.getFund())) {
@@ -68,11 +78,18 @@ public class ParentNavigationLayout extends AppLayout {
                     Pair.of(fundProfileTab, FundProfileView.class)
             );
         }else {
+            final FundDtoFull fundDtoFull = fundService.getFundById(contextUser.getFund().getId());
+            int newApplicationsSize = fundDtoFull.getHelpRequests().stream()
+                    .filter(fundHelpRequestDto -> fundHelpRequestDto.getStatus().equals(FundHelpRequestStatus.NEW))
+                    .collect(Collectors.toSet()).size();
+            applicationsTab.add(new Span(StringSymbolUtils.SPACE + StringSymbolUtils.LEFT_BRACKET + newApplicationsSize + StringSymbolUtils.RIGHT_BRACKET));
+
             tabs = this.createTabs(
                     Pair.of(homeTab, HomeView.class),
                     Pair.of(myProfileTab, UserProfileView.class),
                     Pair.of(fundProfileTab, FundProfileView.class),
                     Pair.of(teamTab, TeamView.class),
+                    Pair.of(applicationsTab, ApplicationsView.class),
                     Pair.of(stockTab, StockView.class)
             );
         }

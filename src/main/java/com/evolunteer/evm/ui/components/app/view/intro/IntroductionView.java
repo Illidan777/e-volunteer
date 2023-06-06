@@ -33,7 +33,7 @@ public class IntroductionView extends VerticalLayout {
 
 
         final Button volunteerButton = new Button(volunteerClientButtonText, buttonClickEvent -> UI.getCurrent().navigate(RouteUtils.LOGIN_ROUTE));
-        final Button simpleClientButton = new Button(simpleClientButtonText, buttonClickEvent -> UI.getCurrent().navigate("ldsfsd"));
+        final Button simpleClientButton = new Button(simpleClientButtonText, buttonClickEvent -> UI.getCurrent().navigate(RouteUtils.VISITOR_ROUTE));
 
         final HorizontalLayout buttonLayout = new HorizontalLayout(volunteerButton, simpleClientButton);
         buttonLayout.setWidth("100%");
